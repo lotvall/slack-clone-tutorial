@@ -14,10 +14,15 @@ export default `
     type Query {
         getUser(id: Int!): User!
         allUsers: [User!]!
+    }
 
+    type RegisterResponse {
+        ok: Boolean!
+        user: User
+        errors: [Error!]
     }
 
     type Mutation {
-        registerUser(username: String!, email: String!, password: String!): Boolean!
+        registerUser(username: String!, email: String!, password: String!): RegisterResponse!
     }
 `

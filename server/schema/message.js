@@ -1,5 +1,3 @@
-const { gql } = require('apollo-server-express');
-
 export default `
     type Message {
         id: Int!
