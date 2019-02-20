@@ -7,6 +7,8 @@ import {
 
 import Home from './Home.js'
 import Register from './Register'
+import Login from './Login'
+
 
 
 export default () => {
@@ -15,6 +17,8 @@ export default () => {
             <Switch>
                 <Route path='/' exact component={Home}/>\
                 <Route path='/register' exact component={Register}/>
+                <Route path='/login' exact component={Login}/>
+
             </Switch>
         </BrowserRouter>
     )
