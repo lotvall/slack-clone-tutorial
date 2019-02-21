@@ -5,6 +5,10 @@ import path from 'path';
 import { fileLoader, mergeTypes, mergeResolvers } from 'merge-graphql-schemas';
 import cors from 'cors'
 
+const SECRET = "a string that you would never be able to guess"
+const SECRET2 = "another string, just used for refreshing"
+
+
 const types = fileLoader(path.join(__dirname, './schema'));
 const resolvers = mergeResolvers(fileLoader(path.join(__dirname, './resolvers')))
 const typeDefs = mergeTypes(types, { all: true });
@@ -19,7 +23,9 @@ const server = new ApolloServer({ typeDefs, resolvers,
     models,
     user: {
       id: 1
-    }
+    },
+    SECRET,
+    SECRET2
   }
 });
 

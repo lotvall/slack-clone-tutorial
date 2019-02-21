@@ -1,7 +1,7 @@
 import React from 'react'
 import {graphql} from 'react-apollo'
 import gql from 'graphql-tag'
-import { Button, Container, Header, Input, Message } from 'semantic-ui-react'
+import { Form, Button, Container, Header, Input, Message } from 'semantic-ui-react'
 
 const REGISTER_USER_MUTATION = gql`
 mutation ($username: String!, $email: String!, $password:String!){
@@ -79,10 +79,22 @@ class Register extends React.Component {
         return(
             <Container text>
                 <Header as='h2'>Register</Header>
-                <Input error={!!usernameError} name="username" onChange={this.onChange} value={username} fluid  placeholder='Username' />
-                <Input error={!!emailError} name="email" onChange={this.onChange} value={email} fluid  placeholder='Email' />
-                <Input error={!!passwordError} name="password" onChange={this.onChange} value={password} type="password" fluid  placeholder='Password' />
-                <Button onClick={this.onSubmit}>Register</Button>
+                <Form>
+                    <Form.Field error={!!usernameError}>
+                        <Input  name="username" onChange={this.onChange} value={username} fluid  placeholder='Username' />
+                    </Form.Field>
+
+                    <Form.Field error={!!emailError}>
+                        <Input  name="email" onChange={this.onChange} value={email} fluid  placeholder='Email' />
+                    </Form.Field>
+
+                    
+                    <Form.Field error={!!passwordError}>
+                        <Input name="password" onChange={this.onChange} value={password} type="password" fluid  placeholder='Password' />
+                    </Form.Field>
+
+                    <Button onClick={this.onSubmit}>Register</Button>
+                </Form>
                 {
                     (usernameError || emailError || passwordError) &&
                     <Message

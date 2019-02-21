@@ -1,5 +1,6 @@
 import bcrypt from 'bcrypt'
 import _ from 'lodash'
+import { tryLogin } from "../auth";
 
 const formatErrors = (e, models) => {
     console.log('what is this', e)
@@ -16,22 +17,13 @@ export default {
 
     },
     Mutation: {
-        registerUser: async (parent, {password, ...otherArgs}, { models }) => {
+        login: (parent, {email, password}, { models, SECRET, SECRET2 }) => 
+            tryLogin(email, password, models, SECRET, SECRET2),
+            
+        registerUser: async (parent, args, { models }) => {
 
             try {
-
-                if (password.length < 5 || password.length > 20) {
-                    return {
-                        ok: false,
-                        errors: [{path: 'password', message: 'The password needs to be between 5 and 20 characters long'}]
-                    }
-                }
-                const hashedPassword = await bcrypt.hash(password, 12)
-
-                const createdUser = await models.User.create({
-                    ...otherArgs,
-                    password: hashedPassword
-                })
+                const createdUser = await models.User.create(args)
 
                 return {
                     ok: true,
