@@ -5,17 +5,26 @@ import Teams from '../components/Teams'
 import Channels from '../components/Channels'
 import Header from '../components/Header'
 import Messages from '../components/Messages'
-import Input from '../components/Input'
+import SendMessage from '../components/SendMessage'
 
 
 export default () => {
     return (
         <AppLayout>
-            <Teams></Teams>
-            <Channels></Channels>
-            <Header></Header>
-            <Messages></Messages>
-            <Input></Input>
+            <Teams
+                teams={[{id:1, name: "TN"}, {id:2, name: "ST"}]}
+            />
+            <Channels 
+                teamName="Team Name"
+                username="Username"
+                channels={[{id:1, name: "General"}, {id:2, name: "Random"}]}
+                users={[{id:1, name: "SlackBot"}, {id:2, name: "User"}]}
+            />
+            <Header
+                channelName="General"
+            />
+            <Messages />
+            <SendMessage />
         </AppLayout>
     )
 }
