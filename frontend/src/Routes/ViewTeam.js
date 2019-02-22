@@ -24,7 +24,9 @@ export default () => {
                 channelName="General"
             />
             <Messages />
-            <SendMessage />
+            <SendMessage 
+                channelName="General"
+            />
         </AppLayout>
     )
 }
