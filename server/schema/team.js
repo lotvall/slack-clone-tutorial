@@ -2,6 +2,8 @@ const { gql } = require('apollo-server-express');
 
 export default `
     type Team {
+        id: Int!
+        name: String!
         owner: User!
         members: [User!]!
         channels: [Channel!]!
@@ -10,6 +12,10 @@ export default `
     type CreateTeamResponse {
         ok: Boolean!
         errors: [Error!]
+    }
+
+    type Query {
+        allTeams: [Team!]!
     }
 
     type Mutation {
