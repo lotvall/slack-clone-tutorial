@@ -8,11 +8,11 @@ import SendMessage from '../components/SendMessage'
 import Sidebar from '../containers/Sidebar'
 
 
-export default () => {
+const ViewTeam = ({match: { params }}) => {
     return (
         <AppLayout>
             <Sidebar 
-                currentTeamId={1}
+                currentTeamId={params.teamId}
             />
             <Header
                 channelName="general"
@@ -24,3 +24,5 @@ export default () => {
         </AppLayout>
     )
 }
+
+export default ViewTeam

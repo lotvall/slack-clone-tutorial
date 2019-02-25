@@ -1,7 +1,7 @@
 import React from 'react'
 import gql from 'graphql-tag'
 import { Query } from 'react-apollo'
-import _ from 'lodash'
+import findIndex from 'lodash/findIndex'
 import decode from 'jwt-decode'
 import Teams from '../components/Teams'
 import Channels from '../components/Channels'
@@ -33,7 +33,7 @@ const Sidebar = ({ currentTeamId }) => (
                 if (data) {
                     console.log(data)
 
-                    const teamIdx=_.findIndex(data.allTeams,['id', currentTeamId])
+                    const teamIdx=currentTeamId ? findIndex(data.allTeams,['id', parseInt(currentTeamId, 10)]) : 0
                     const team = data.allTeams[teamIdx]
                     let username =""
 
