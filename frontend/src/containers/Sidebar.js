@@ -1,24 +1,12 @@
 import React from 'react'
-import gql from 'graphql-tag'
 import { Query } from 'react-apollo'
 import findIndex from 'lodash/findIndex'
 import decode from 'jwt-decode'
 import Teams from '../components/Teams'
 import Channels from '../components/Channels'
 import AddChannelModal from '../components/AddChannelModal';
+import { TEAMS_QUERY } from '../graphql/team'
 
-const TEAMS_QUERY = gql`
-    query {
-        allTeams {
-            id
-            name
-            channels {
-                id
-                name
-            }
-        }
-    }    
-`
 
 class Sidebar extends React.Component {
 
@@ -78,6 +66,7 @@ class Sidebar extends React.Component {
                                     />
                                     <Channels 
                                         teamName={team.name}
+                                        teamId={team.id}
                                         username={username}
                                         channels={team.channels}
                                         users={[{id:1, name: "SlackBot"}, {id:2, name: "User"}]}
@@ -86,7 +75,8 @@ class Sidebar extends React.Component {
                                     <AddChannelModal 
                                         open={this.state.openAddChannelModal}
                                         onClose={this.handleCloseAddChannelModal}
-                                        teamId={currentTeamId}
+                                        teamId={team.id}
+                                        forceRender={this.handleForceRender}
                                     />
                                 </>
                             )
