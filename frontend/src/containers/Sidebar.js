@@ -34,7 +34,7 @@ class Sidebar extends React.Component {
 
     render () {
 
-        const { team, username, teams } = this.props
+        const { team, username, isOwner, teams } = this.props
 
         return (
                                 <>
@@ -43,9 +43,10 @@ class Sidebar extends React.Component {
                                     />
                                     <Channels 
                                         teamName={team.name}
-                                        teamId={team.id}
+                                        teamId={team.id}  
                                         username={username}
                                         channels={team.channels}
+                                        isOwner={isOwner}
                                         users={[{id:1, name: "SlackBot"}, {id:2, name: "User"}]}
                                         onAddChannelClick={this.toggleAddChannelModal}
                                         onInvitePeopleClick={this.toggleInvitePeopleModal}

@@ -53,10 +53,12 @@ const ViewTeam = ({match: { params: { teamId, channelId} }}) => {
                             const selectedChannel  = channelIdx===-1 ? selectedTeam.channels[0] : selectedTeam.channels[channelIdx]
 
                             let username =""
+                            let isOwner = false
                             try {
                                 const token = localStorage.getItem('token')
                                 const { user } = decode(token)
                                 username = user.username
+                                isOwner = user.id === selectedTeam.owner
                             } catch(error) {
 
                             }
@@ -68,6 +70,7 @@ const ViewTeam = ({match: { params: { teamId, channelId} }}) => {
                                         team={selectedTeam}
                                         teams={sidebarTeams}
                                         username={username}
+                                        isOwner={isOwner}
 
                                     />
                                     { selectedChannel && <Header
