@@ -8,13 +8,16 @@ const MESSAGES_QUERY = gql`
         messages(channelId: $channelId) {
             id
             text
-            user {
-                username
-            }
             createdAt
         }
     }
  `
+
+ const message = ({ id, text }) => (
+    <li key={`message-${id}`}>
+      {text}
+    </li>
+  );
 
 const MessageContainer = ({channelId}) => {
     console.log(channelId)
@@ -26,7 +29,7 @@ const MessageContainer = ({channelId}) => {
                 if(error) console.log(error)
                 if (data) console.log(data)
 
-                const messages = data.Messages
+                const messages = data.messages
                 return (
                     <Messages>
                         <ul>
