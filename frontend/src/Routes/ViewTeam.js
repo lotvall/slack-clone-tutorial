@@ -3,9 +3,10 @@ import React from 'react'
 import AppLayout from '../components/AppLayout'
 
 import Header from '../components/Header'
-import Messages from '../components/Messages'
 import SendMessage from '../components/SendMessage'
 import Sidebar from '../containers/Sidebar'
+import MessageContainer from '../containers/MessageContainer'
+
 
 import { Query } from 'react-apollo'
 import findIndex from 'lodash/findIndex'
@@ -73,14 +74,17 @@ const ViewTeam = ({match: { params: { teamId, channelId} }}) => {
                                         isOwner={isOwner}
 
                                     />
-                                    { selectedChannel && <Header
+                                    { selectedChannel && 
+                                    <Header
                                         channelName={selectedChannel.name}
-                                    /> }
-                                    { selectedChannel && <Messages 
-                                        channelId = { selectedChannel.id }
-                                    /> }
+                                    /> 
+                                    }
+                                    { selectedChannel && 
+                                    <MessageContainer channelId = { selectedChannel.id }/>
+                                    }
                                     <SendMessage 
                                         channelName={selectedChannel.name}
+                                        channelId={selectedChannel.id}
                                     />
                                 </AppLayout>
 
