@@ -32,21 +32,25 @@ const ViewTeam = ({match: { params: { teamId, channelId} }}) => {
                         if (data) {
                             console.log(data)
 
-                            if(!data.allTeams.length) {
+                            const teams =[...data.allTeams, ...data.invitedTeams]
+
+                            if(!teams.length) {
                                 return <Redirect to="/create-team"/>
                             }
+
                             const teamIdInteger = parseInt(teamId, 10)
-                            const teamIdx= teamIdInteger ? findIndex(data.allTeams,['id', teamIdInteger]) : 0
-                            const selectedTeam = data.allTeams[teamIdx]
-                            const teams = data.allTeams.map(team => ({
+                            const teamIdx= teamIdInteger ? findIndex(teams,['id', teamIdInteger]) : 0
+                            const selectedTeam = teamIdx === -1 ?  teams[0] : teams[teamIdx]
+
+                            const sidebarTeams =  teams.map(team => ({
                                 id: team.id,
                                 letter: team.name.charAt(0).toUpperCase()
                             }))
+                    
 
                             const channelIdInteger = parseInt(channelId, 10)
                             const channelIdx = channelIdInteger ? findIndex(selectedTeam.channels, ['id', channelIdInteger]) : 0
-                            const selectedChannel  = selectedTeam.channels[channelIdx]
-                            console.log(selectedTeam, selectedTeam.channels)
+                            const selectedChannel  = channelIdx===-1 ? selectedTeam.channels[0] : selectedTeam.channels[channelIdx]
 
                             let username =""
                             try {
@@ -62,7 +66,7 @@ const ViewTeam = ({match: { params: { teamId, channelId} }}) => {
                                 <AppLayout>
                                     <Sidebar
                                         team={selectedTeam}
-                                        teams={teams}
+                                        teams={sidebarTeams}
                                         username={username}
 
                                     />

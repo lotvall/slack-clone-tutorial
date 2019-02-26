@@ -14,28 +14,22 @@ class Sidebar extends React.Component {
         openInvitePeopleModal: false,
     }
 
-    handleCloseAddChannelModal = () => {
-        this.setState({
-            openAddChannelModal: false
-        })
+    toggleAddChannelModal = (e) => {
+        if(e) {
+            e.preventDefault()
+        }
+        this.setState(prevState => ({
+            openAddChannelModal: !prevState.openAddChannelModal
+        }))
     }
 
-    handleAddChannelClick = () => {
-        this.setState({
-            openAddChannelModal: true
-        })
-    }
-
-    handleCloseInvitePeopleModal = () => {
-        this.setState({
-            openInvitePeopleModal: false
-        })
-    }
-
-    handleInvitePeopleClick = () => {
-        this.setState({
-            openInvitePeopleModal: true
-        })
+    toggleInvitePeopleModal = (e) => {
+        if(e) {
+            e.preventDefault()
+        }
+        this.setState(prevState => ({
+            openInvitePeopleModal: !prevState.openInvitePeopleModal
+        }))
     }
 
     render () {
@@ -53,17 +47,17 @@ class Sidebar extends React.Component {
                                         username={username}
                                         channels={team.channels}
                                         users={[{id:1, name: "SlackBot"}, {id:2, name: "User"}]}
-                                        onAddChannelClick={this.handleAddChannelClick}
-                                        onInvitePeopleClick={this.handleInvitePeopleClick}
+                                        onAddChannelClick={this.toggleAddChannelModal}
+                                        onInvitePeopleClick={this.toggleInvitePeopleModal}
                                     />
                                     <AddChannelModal 
                                         open={this.state.openAddChannelModal}
-                                        onClose={this.handleCloseAddChannelModal}
+                                        onClose={this.toggleAddChannelModal}
                                         teamId={team.id}
                                     />
                                     <InvitePeopleModal 
                                         open={this.state.openInvitePeopleModal}
-                                        onClose={this.handleCloseInvitePeopleModal}
+                                        onClose={this.toggleInvitePeopleModal}
                                         teamId={team.id}
                                     />
                                 

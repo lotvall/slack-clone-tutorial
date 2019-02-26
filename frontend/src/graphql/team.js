@@ -10,6 +10,14 @@ export const TEAMS_QUERY = gql`
                 name
             }
         }
+        invitedTeams {
+            id
+            name
+            channels {
+                id
+                name
+            }
+        }
     }    
 `
 
