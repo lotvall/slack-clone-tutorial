@@ -1,11 +1,8 @@
 import React from 'react'
-import { Query } from 'react-apollo'
-import findIndex from 'lodash/findIndex'
-import decode from 'jwt-decode'
+
 import Teams from '../components/Teams'
 import Channels from '../components/Channels'
 import AddChannelModal from '../components/AddChannelModal';
-import { TEAMS_QUERY } from '../graphql/team'
 
 
 class Sidebar extends React.Component {
@@ -28,41 +25,12 @@ class Sidebar extends React.Component {
 
     render () {
 
-        const { currentTeamId } = this.props
+        const { team, username, teams } = this.props
 
         return (
-            <Query query={TEAMS_QUERY}>
-                {
-                    ({loading, error, data}) => {
-                        if (loading) {
-                            return null
-                        }
-                        if (error) {
-                            console.log(error)
-                        }
-
-                        if (data) {
-                            console.log(data)
-
-                            const teamIdx=currentTeamId ? findIndex(data.allTeams,['id', parseInt(currentTeamId, 10)]) : 0
-                            const team = data.allTeams[teamIdx]
-                            let username =""
-
-                            try {
-                                const token = localStorage.getItem('token')
-                                const { user } = decode(token)
-                                username = user.username
-                            } catch(error) {
-
-                            }
-
-                            return (
                                 <>
                                     <Teams
-                                        teams={data.allTeams.map(team => ({
-                                            id: team.id,
-                                            letter: team.name.charAt(0).toUpperCase()
-                                        }))}
+                                        teams={teams}
                                     />
                                     <Channels 
                                         teamName={team.name}
@@ -79,15 +47,6 @@ class Sidebar extends React.Component {
                                         forceRender={this.handleForceRender}
                                     />
                                 </>
-                            )
-                        }
-                        
-
-
-                    }
-                }
-
-            </Query>  
         )
     } 
 }
