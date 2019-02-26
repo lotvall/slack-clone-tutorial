@@ -1,6 +1,5 @@
 import formatErrors from '../formatErrors'
 import { requiresAuth } from '../permission'
-import team from '../schema/team';
 
 export default {
     Query: {
@@ -9,21 +8,24 @@ export default {
         )
     },
     Mutation: {
-        createTeam: requiresAuth.createResolver(async (parent, args, {models, user}) => {
-
+        createTeam: requiresAuth.createResolver(async (parent, args, { models, user }) => {
             try {
-                const team = await models.Team.create({...args, owner: user.id})
-                await models.Channel.create({name: 'general', public: true, teamId: team.id})
+                const response = await models.sequelize.transaction(async () => {
+                    const team = await models.Team.create({ ...args, owner: user.id });
+                    await models.Channel.create({ name: 'general', public: true, teamId: team.id });
+                    return team;
+                });
+                
                 return {
                     ok: true,
-                    team
-                }
-            } catch(error) {
-                console.log(error)
+                    team: response,
+                };
+            } catch (err) {
+                console.log(err);
                 return {
                     ok: false,
-                    errors: formatErrors(error, models)
-                }
+                    errors: formatErrors(err, models),
+                };
             }
         }),
 

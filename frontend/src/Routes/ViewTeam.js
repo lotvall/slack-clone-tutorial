@@ -11,6 +11,7 @@ import { Query } from 'react-apollo'
 import findIndex from 'lodash/findIndex'
 import decode from 'jwt-decode'
 import { TEAMS_QUERY } from '../graphql/team'
+import { Redirect } from 'react-router-dom'
 
 
 
@@ -31,15 +32,22 @@ const ViewTeam = ({match: { params: { teamId, channelId} }}) => {
                         if (data) {
                             console.log(data)
 
-                            const teamIdx= !!teamId ? findIndex(data.allTeams,['id', parseInt(teamId, 10)]) : 0
+                            if(!data.allTeams.length) {
+                                return <Redirect to="/create-team"/>
+                            }
+                            const teamIdInteger = parseInt(teamId, 10)
+                            const teamIdx= teamIdInteger ? findIndex(data.allTeams,['id', teamIdInteger]) : 0
                             const selectedTeam = data.allTeams[teamIdx]
                             const teams = data.allTeams.map(team => ({
                                 id: team.id,
                                 letter: team.name.charAt(0).toUpperCase()
                             }))
-                            const channelIdx = !!channelId ? findIndex(selectedTeam.channels, ['id', parseInt(channelId, 10)]) : 0
+
+                            const channelIdInteger = parseInt(channelId, 10)
+                            const channelIdx = channelIdInteger ? findIndex(selectedTeam.channels, ['id', channelIdInteger]) : 0
                             const selectedChannel  = selectedTeam.channels[channelIdx]
-                            console.log(channelIdx, selectedTeam, selectedChannel)
+                            console.log(selectedTeam, selectedTeam.channels)
+
                             let username =""
                             try {
                                 const token = localStorage.getItem('token')
@@ -58,12 +66,12 @@ const ViewTeam = ({match: { params: { teamId, channelId} }}) => {
                                         username={username}
 
                                     />
-                                    <Header
+                                    { selectedChannel && <Header
                                         channelName={selectedChannel.name}
-                                    />
-                                    <Messages 
+                                    /> }
+                                    { selectedChannel && <Messages 
                                         channelId = { selectedChannel.id }
-                                    />
+                                    /> }
                                     <SendMessage 
                                         channelName={selectedChannel.name}
                                     />

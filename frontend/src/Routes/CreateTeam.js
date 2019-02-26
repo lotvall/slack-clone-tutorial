@@ -29,6 +29,7 @@ class CreateTeam extends React.Component {
                 variables: { name }
             })
         } catch (err) {
+            console.log(err)
             this.props.history.push('/login')
             return
         }
@@ -47,7 +48,7 @@ class CreateTeam extends React.Component {
     }
 
     render() {
-        const { name, errors: {nameError} } = this
+        const { name, errors: { nameError } } = this
 
         let errorList = [];
 
