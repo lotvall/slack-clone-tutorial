@@ -42,6 +42,7 @@ const server =  () => {
 
 server().applyMiddleware({ app });
 
+// { force: true } inside sync to drop db
 models.sequelize.sync().then(function () {
   app.listen(PORT);
 });
