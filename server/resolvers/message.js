@@ -1,25 +1,27 @@
-
+import { requiresAuth } from '../permission'
 export default {
+    
+    Message: {
+        user: ({ userId }, args, { models }) => {
+            console.log('user being called inside messages')
+            return models.User.findOne({where: { id: userId }})
+        }
+    },
 
     Query: {
-        messages: async (parent, args, {models, user}) => {
-            console.log('channel id', args.channelId)
-            const channelId = args.channelId
-
-            const response = await models.Message.findAll({where: { channelId }}, { raw: true })
-            
-            const messages = response.map(message => {
-                console.log('message', message.dataValues.id, message.dataValues.text,)
+        messages: requiresAuth.createResolver(async (parent, { channelId }, {models, user}) => {
+            const messages = await models.Message.findAll({
+                order: [['createdAt', 'ASC']],
+                where: { channelId }
+            }, { raw: true })
+            return messages.map(message => {
                 return {
-                    id: message.dataValues.id,
-                    text: message.dataValues.text,
-                    channelId,
-                    createdAt: message.dataValues.createdAt,
-                    user: message.dataValues.userId
+                    ...message.dataValues,
+                    createdAt: message.dataValues.createdAt.toString(),
                 }
             })
-            return messages
-        }
+                
+        })
     },
     Mutation: {
         createMessage: async (parent, args, {models, user}) => {
