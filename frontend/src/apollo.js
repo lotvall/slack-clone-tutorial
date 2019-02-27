@@ -1,5 +1,5 @@
 import { ApolloClient } from 'apollo-client';
-import { createHttpLink, HttpLink } from 'apollo-link-http';
+import { createHttpLink } from 'apollo-link-http';
 import { setContext } from 'apollo-link-context';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import { ApolloLink, split } from 'apollo-link';

@@ -30,15 +30,14 @@ app.use(cors('*'))
 app.use(addUser)
 
 const server =  new ApolloServer({ typeDefs, resolvers,  playground: true, 
-    context: ({ req }) => {
+    context: ({ req, connection }) => {
 
       // retrieve user from the request item, added in addUser
-      const user = req.user
 
       // add the user to the context
       return { 
         models,
-        user,
+        user: connection ? connection.context : req.user,
         SECRET,
         SECRET2
       };
