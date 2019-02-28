@@ -10,8 +10,7 @@ import MessageContainer from '../containers/MessageContainer'
 
 import { Query } from 'react-apollo'
 import findIndex from 'lodash/findIndex'
-import decode from 'jwt-decode'
-import { TEAMS_QUERY } from '../graphql/team'
+import { USER_QUERY } from '../graphql/user'
 import { Redirect } from 'react-router-dom'
 
 
@@ -20,7 +19,7 @@ const ViewTeam = ({match: { params: { teamId, channelId} }}) => {
 
     return (
 
-        <Query query={TEAMS_QUERY}>
+        <Query query={USER_QUERY}>
                 {
                     ({loading, error, data}) => {
                         if (loading) {
@@ -33,7 +32,7 @@ const ViewTeam = ({match: { params: { teamId, channelId} }}) => {
                         if (data) {
                             console.log(data)
 
-                            const teams =[...data.allTeams, ...data.invitedTeams]
+                            const teams =data.getUser.teams
 
                             if(!teams.length) {
                                 return <Redirect to="/create-team"/>
@@ -53,16 +52,8 @@ const ViewTeam = ({match: { params: { teamId, channelId} }}) => {
                             const channelIdx = channelIdInteger ? findIndex(selectedTeam.channels, ['id', channelIdInteger]) : 0
                             const selectedChannel  = channelIdx===-1 ? selectedTeam.channels[0] : selectedTeam.channels[channelIdx]
 
-                            let username =""
+                            const username = data.getUser.username
                             let isOwner = false
-                            try {
-                                const token = localStorage.getItem('token')
-                                const { user } = decode(token)
-                                username = user.username
-                                isOwner = user.id === selectedTeam.owner
-                            } catch(error) {
-
-                            }
 
                             return (
 

@@ -1,14 +1,21 @@
 import { tryLogin } from "../auth";
 import formatErrors from '../formatErrors'
+import { requiresAuth } from '../permission'
 
 
 export default {
+    User: {
+        teams: async (parent, args, { models, user }) => 
+            await models.Team.findAll({
+                include: [{
+                    model: models.User,
+                    where: { id: user.id },
+                }]   
+            }, { raw: true })
+    },
     Query: {
-        getUser: (parent, {id}, { models }) => models.User.findOne({where: id }),
-        allUsers: (parent, args, { models }) => {
-            return models.User.findAll()
-        },
-
+        getUser: requiresAuth.createResolver((parent,args, { models, user }) => models.User.findOne({where: { id: user.id  } })),
+        allUsers: (parent, args, { models }) => models.User.findAll(),
     },
     Mutation: {
         login: (parent, {email, password}, { models, SECRET, SECRET2 }) => 

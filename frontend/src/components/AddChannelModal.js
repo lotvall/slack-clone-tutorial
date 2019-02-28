@@ -3,7 +3,7 @@ import { Form, Input, Button, Modal } from 'semantic-ui-react'
 import { withFormik } from 'formik'
 import gql from 'graphql-tag'
 import { compose, graphql } from 'react-apollo';
-import { TEAMS_QUERY } from '../graphql/team'
+import { USER_QUERY } from '../graphql/user'
 import findIndex from 'lodash/findIndex'
 
 
@@ -73,10 +73,10 @@ export default compose(
                     const { ok, channel } = createChannel
 
                     if (ok) {
-                        const data = store.readQuery({ query: TEAMS_QUERY })
+                        const data = store.readQuery({ query: USER_QUERY })
                         const teamIdx = findIndex(data.allTeams, ['id', teamId ])
                         data.allTeams[teamIdx].channels.push(channel)
-                        store.writeQuery({query: TEAMS_QUERY, data})
+                        store.writeQuery({query: USER_QUERY, data})
                     } else {
                         return
                     }

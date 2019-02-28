@@ -13,6 +13,7 @@ export default async (req, res, next) => {
   
     if (token) {
         try {
+            console.log('try in adduser', token)
             const decoded = jwt.verify(token, SECRET)
 
             req.user = decoded.user
