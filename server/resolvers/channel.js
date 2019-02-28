@@ -7,7 +7,8 @@ export default {
         createChannel: requiresAuth.createResolver(async (parent, args, {models, user}) => {
             try {
                 const team = await models.Team.findOne({where: { id: args.teamId}}, { raw: true })
-                const channel = await models.Channel.create(args);
+                const channel = await models.Channel.create({...args, public: true});
+                console.log('channel', channel)
                 if(team.owner !== user.id) {
                     return {
                         ok: false,

@@ -44,10 +44,14 @@ export default {
     Mutation: {
         createMessage: requiresAuth.createResolver(async (parent, args, { models, user }) => {
           try {
+            // this is what is failing
+            console.log('failing here...')
             const message = await models.Message.create({
-              ...args,
-              userId: user.id,
+                ...args,
+                userId: user.id,
             });
+
+            console.log('this is allowed to run')
     
             const asyncFunc = async () => {
               const currentUser = await models.User.findOne({

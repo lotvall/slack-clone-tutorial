@@ -53,9 +53,31 @@ const MESSAGE_SUBSCRIPTION = gql`
 
 class AllMessages extends React.Component {
 
-    componentDidMount() {
-        this.props.subscribeToNewMessages();
-      }
+    componentWillMount() {
+        console.log('props: ', this.props.channelId)
+        console.log(`subscribing to ${this.props.channelId}`)
+
+        this.unscubscribe = this.props.subscribeToNewMessages(this.props.channelId);
+    }
+
+    componentWillReceiveProps({ channelId }) {
+        console.log('props: ', this.props.channelId, channelId)
+        if (this.props.channelId !== channelId) { 
+            if(this.unscubscribe) {
+                console.log(`unsubscribing to ${this.props.channelId}`)
+                this.unscubscribe(this.props.channelId)
+            }
+            console.log(`subscribing to ${channelId}`)
+
+            this.unscubscribe = this.props.subscribeToNewMessages(channelId);
+        }
+    }
+    componentWillUnmount() {
+        if(this.unscubscribe) {
+            console.log(`unsubscribing to ${this.props.channelId}`)
+            this.unscubscribe(this.props.channelId)
+        }
+    }
 
     render() {
         const {messages} = this.props
@@ -78,7 +100,7 @@ class MessageContainer extends React.Component {
 
         const {channelId} = this.props
         return (
-            <Query query={MESSAGES_QUERY} variables={{channelId}}>
+            <Query query={MESSAGES_QUERY} variables={{channelId}} fetchPolicy={"network-only"}>
             {
                 ({ subscribeToMore, loading, error, data}) => {
                     if (loading) return null
@@ -90,10 +112,12 @@ class MessageContainer extends React.Component {
 
                         <AllMessages 
                             messages={messages}
-                            subscribeToNewMessages = {() => (
+                            channelId={channelId}
+                            subscribeToNewMessages = {(channelId) => (
                                 subscribeToMore({
                                     document: MESSAGE_SUBSCRIPTION,
                                     variables: { channelId },
+                                    fetchPolicy: 'network-only',
                                     updateQuery: (prev, { subscriptionData }) => {
                                         if (!subscriptionData.data) return prev;
                                         return {

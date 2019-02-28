@@ -55,12 +55,18 @@ export default compose(
                 setSubmitting(false)
                 return
             }
-            await mutate({ 
+            console.log(`handlesubmit in channel: ${channelId} with text: ${values.message}`)
+
+            try {
+                await mutate({ 
                 variables: { 
                     channelId, 
                     text: values.message
                 }
             })
+            } catch(err) {
+                console.log(err)
+            }
             resetForm()
         }
     })
