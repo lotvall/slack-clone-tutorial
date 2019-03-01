@@ -4,6 +4,17 @@ import { requiresAuth } from '../permission'
 
 
 export default {
+    Team: {
+        admin: async (parent, args, {models, user }) => {
+            const teamId = parent.dataValues.id
+            const userId = user.id
+            const member = await models.Member.findOne({
+                where: { teamId, userId}
+            })
+            const admin = member.dataValues.admin
+            return admin
+        }
+    },
     User: {
         teams: async (parent, args, { models, user }) => 
             await models.Team.findAll({

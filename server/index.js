@@ -29,58 +29,40 @@ const server =  new ApolloServer({ typeDefs, resolvers,  playground: true,
 
   subscriptions: {
     onConnect: async ( connectionParams, webSocket, context) => {
-      console.log(connectionParams)
       const { token, refreshToken } = connectionParams
-      console.log('token', token, refreshToken)
-      console.log('refresh', refreshToken)
-
 
       if (token && refreshToken) {
-        let user = null;
-        console.log(user)
 
         try {
           console.log('try block')
 
-          const decoded = jwt.verify(token, SECRET)
-          user = decoded.user
-          console.log('after decode')
+          const { user } = jwt.verify(token, SECRET)
+          console.log('try the user', user)
 
-          console.log(user)
-
+          return { models, user}
             
         } catch (err) {
-          console.log('inside catch')
 
-          const newTokens = await refreshTokens(token, refreshToken, models, SECRET, SECRET2);
-          console.log('new tokens', newTokens)
-
-          user = newTokens.user;
-          console.log(user)
+          const { user } = await refreshTokens(token, refreshToken, models, SECRET, SECRET2);
+          console.log('catch the user', newTokens.user)
+          return { models, user } 
         }
-        console.log(user)
-
-        if(!user) {
-          throw new Error('Invalid auth tokens')
-        }
-        // const member = await models.Member.findOne({where : { teamId: 1, userId: user.id }})
-        // console.log(member)
-        // if(!member) {
-        //   throw new Error('Invalid auth tokens')
-        // }
-
-        return true
       }
-      throw new Error ('Missing auth tokens')
+      console.log('just returning models for some reason')
+      return { models }
     },
   },
   context: ({ req, connection }) => {
+
+    // If we build the context for subscriptions, return the context generated in the onConnect callback.
+    // In this example `connection.context` is `{ extended: 'context' }`
+    console.log('is the user here', connection)
 
     // retrieve user from the request item, added in addUser
     // add the user to the context
     return { 
       models,
-      user: connection ? connection.context : req.user,
+      user: connection ? connection.context.user : req.user,
       SECRET,
       SECRET2
     };

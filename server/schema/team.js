@@ -6,6 +6,7 @@ export default `
         name: String!
         members: [User!]!
         channels: [Channel!]!
+        admin: Boolean!
     }
 
     type CreateTeamResponse {

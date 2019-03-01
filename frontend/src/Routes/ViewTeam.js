@@ -53,7 +53,7 @@ const ViewTeam = ({match: { params: { teamId, channelId} }}) => {
                             const selectedChannel  = channelIdx===-1 ? selectedTeam.channels[0] : selectedTeam.channels[channelIdx]
 
                             const username = data.getUser.username
-                            let isOwner = false
+                            const isOwner = selectedTeam.admin
 
                             return (
 
