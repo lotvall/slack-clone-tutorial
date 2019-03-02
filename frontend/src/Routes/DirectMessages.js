@@ -5,7 +5,7 @@ import AppLayout from '../components/AppLayout'
 import Header from '../components/Header'
 import SendMessage from '../components/SendMessage'
 import Sidebar from '../containers/Sidebar'
-import MessageContainer from '../containers/MessageContainer'
+import DirectMessageContainer from '../containers/DirectMessageContainer'
 
 
 import { Query, graphql } from 'react-apollo'
@@ -15,13 +15,13 @@ import { Redirect } from 'react-router-dom'
 import gql from 'graphql-tag'
 
 
-const CREATE_MESSAGE_MUTATION = gql`
-    mutation ($channelId:Int!, $text: String!){
-        createMessage(channelId: $channelId, text: $text)
+const CREATE_DIRECT_MESSAGE_MUTATION = gql`
+    mutation ($receiverId:Int!, $text:String!, $teamId: Int!){
+        createDirectMessage(receiverId: $receiverId, text:$text, teamId: $teamId)
     }
 `
 
-const DirectMessages = ({match: { params: { teamId, userId} }}) => {
+const DirectMessages = ({mutate, match: { params: { teamId, receiverId} }}) => {
 
     return (
 
@@ -66,17 +66,25 @@ const DirectMessages = ({match: { params: { teamId, userId} }}) => {
                                         isOwner={isOwner}
 
                                     />
-                                    {/*  
+                                    {  
                                     <Header
-                                        channelName={selectedChannel.name}
+                                        channelName={"a username goes here"}
                                     /> 
-                                    */}
-                                    {/*  
-                                    <MessageContainer channelId = { selectedChannel.id }/>
-                                    */}
+                                    }
+                                    {  
+                                    <DirectMessageContainer teamId={teamId} otherUserId={receiverId}/>
+                                    }
                                     <SendMessage 
-                                        onSubmit={() => {}}
-                                        placeholder={userId} 
+                                        onSubmit={async (text) => {
+                                            await mutate({
+                                                variables:{
+                                                    text,
+                                                    receiverId: parseInt(receiverId),
+                                                    teamId: teamIdInteger
+                                                }
+                                            })
+                                        }}
+                                        placeholder={receiverId} 
                                     />
                                 </AppLayout>
 
@@ -88,4 +96,4 @@ const DirectMessages = ({match: { params: { teamId, userId} }}) => {
     )
 }
 
-export default graphql(CREATE_MESSAGE_MUTATION)(DirectMessages)
+export default graphql(CREATE_DIRECT_MESSAGE_MUTATION)(DirectMessages)
