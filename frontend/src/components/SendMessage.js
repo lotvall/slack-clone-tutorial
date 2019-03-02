@@ -12,14 +12,8 @@ const Root = styled.div`
 `
 const ENTER_KEY = 13
 
-const CREATE_MESSAGE_MUTATION = gql`
-    mutation ($channelId:Int!, $text: String!){
-        createMessage(channelId: $channelId, text: $text)
-    }
-`
-
 const SendMessage = ({ 
-    channelName,
+    placeholder,
     values,
     handleChange,
     handleBlur,
@@ -39,35 +33,33 @@ const SendMessage = ({
             name="message"
             value={values.message}
             fluid
-            placeholder={`# ${channelName}`}
+            placeholder={`# ${placeholder}`}
         />
     </Root>
 )
 
-export default compose(
-    graphql(CREATE_MESSAGE_MUTATION),
-    withFormik({
+export default withFormik({
 
         mapPropsToValues: () => ({ message: '' }),
         
-        handleSubmit: async (values, { props: { channelId, mutate }, resetForm, setSubmitting }) => {
+        handleSubmit: async (values, { props: { onSubmit  }, resetForm, setSubmitting }) => {
             if(!values.message || !values.message.trim()) {
                 setSubmitting(false)
                 return
             }
-            console.log(`handlesubmit in channel: ${channelId} with text: ${values.message}`)
 
             try {
-                await mutate({ 
-                variables: { 
-                    channelId, 
-                    text: values.message
-                }
-            })
+                await onSubmit(values.message)
+                // await mutate({ 
+                // variables: { 
+                //     channelId, 
+                //     text: values.message
+                // }
+                // })
             } catch(err) {
                 console.log(err)
             }
             resetForm()
         }
     })
-)(SendMessage)
+(SendMessage)

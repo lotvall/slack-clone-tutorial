@@ -7,11 +7,13 @@ import SendMessage from '../components/SendMessage'
 import Sidebar from '../containers/Sidebar'
 import MessageContainer from '../containers/MessageContainer'
 
-import gql from 'graphql-tag'
-import { graphql, Query } from 'react-apollo'
+
+import { Query, graphql } from 'react-apollo'
 import findIndex from 'lodash/findIndex'
 import { USER_QUERY } from '../graphql/user'
 import { Redirect } from 'react-router-dom'
+import gql from 'graphql-tag'
+
 
 const CREATE_MESSAGE_MUTATION = gql`
     mutation ($channelId:Int!, $text: String!){
@@ -19,7 +21,7 @@ const CREATE_MESSAGE_MUTATION = gql`
     }
 `
 
-const ViewTeam = ({mutate, match: { params: { teamId, channelId} }}) => {
+const DirectMessages = ({match: { params: { teamId, userId} }}) => {
 
     return (
 
@@ -51,11 +53,6 @@ const ViewTeam = ({mutate, match: { params: { teamId, channelId} }}) => {
                                 letter: team.name.charAt(0).toUpperCase()
                             }))
                     
-
-                            const channelIdInteger = parseInt(channelId, 10)
-                            const channelIdx = channelIdInteger ? findIndex(selectedTeam.channels, ['id', channelIdInteger]) : 0
-                            const selectedChannel  = channelIdx===-1 ? selectedTeam.channels[0] : selectedTeam.channels[channelIdx]
-
                             const username = data.getUser.username
                             const isOwner = selectedTeam.admin
 
@@ -69,20 +66,17 @@ const ViewTeam = ({mutate, match: { params: { teamId, channelId} }}) => {
                                         isOwner={isOwner}
 
                                     />
-                                    { selectedChannel && 
+                                    {/*  
                                     <Header
                                         channelName={selectedChannel.name}
                                     /> 
-                                    }
-                                    { selectedChannel && 
+                                    */}
+                                    {/*  
                                     <MessageContainer channelId = { selectedChannel.id }/>
-                                    }
+                                    */}
                                     <SendMessage 
-                                        onSubmit={async (text) =>{
-                                            await mutate({variables: {text, channelId: selectedChannel.id}})
-                                        }}
-                                        placeholder={selectedChannel.name}
-                                        channelId={selectedChannel.id}
+                                        onSubmit={() => {}}
+                                        placeholder={userId} 
                                     />
                                 </AppLayout>
 
@@ -94,4 +88,4 @@ const ViewTeam = ({mutate, match: { params: { teamId, channelId} }}) => {
     )
 }
 
-export default graphql(CREATE_MESSAGE_MUTATION)(ViewTeam)
+export default graphql(CREATE_MESSAGE_MUTATION)(DirectMessages)
