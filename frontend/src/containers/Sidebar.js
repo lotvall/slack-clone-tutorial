@@ -4,6 +4,8 @@ import Teams from '../components/Teams'
 import Channels from '../components/Channels'
 import AddChannelModal from '../components/AddChannelModal'
 import InvitePeopleModal from '../components/InvitePeopleModal'
+import DirectMessageModal from '../components/DirectMessageModal'
+
 
 
 
@@ -12,6 +14,7 @@ class Sidebar extends React.Component {
     state = {
         openAddChannelModal: false,
         openInvitePeopleModal: false,
+        openDirectMessageModal: false,
     }
 
     toggleAddChannelModal = (e) => {
@@ -31,6 +34,16 @@ class Sidebar extends React.Component {
             openInvitePeopleModal: !prevState.openInvitePeopleModal
         }))
     }
+    toggleDirectMessageModal = (e) => {
+        if(e) {
+            e.preventDefault()
+        }
+
+        this.setState(prevState => ({
+            openDirectMessageModal: !prevState.openDirectMessageModal
+        }))
+    }
+    openDirect
 
     render () {
 
@@ -50,6 +63,7 @@ class Sidebar extends React.Component {
                                         users={[{id:1, name: "SlackBot"}, {id:2, name: "User"}]}
                                         onAddChannelClick={this.toggleAddChannelModal}
                                         onInvitePeopleClick={this.toggleInvitePeopleModal}
+                                        onDirectMessageClick={this.toggleDirectMessageModal}
                                     />
                                     <AddChannelModal 
                                         open={this.state.openAddChannelModal}
@@ -59,6 +73,11 @@ class Sidebar extends React.Component {
                                     <InvitePeopleModal 
                                         open={this.state.openInvitePeopleModal}
                                         onClose={this.toggleInvitePeopleModal}
+                                        teamId={team.id}
+                                    />
+                                    <DirectMessageModal 
+                                        open={this.state.openDirectMessageModal}
+                                        onClose={this.toggleDirectMessageModal}
                                         teamId={team.id}
                                     />
                                 

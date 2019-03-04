@@ -18,6 +18,7 @@ export default `
     type Query {
         allTeams: [Team!]!
         invitedTeams: [Team!]!
+        getTeamMembers(teamId: Int!): [User!]!
     }
 
     type VoidResponse {
