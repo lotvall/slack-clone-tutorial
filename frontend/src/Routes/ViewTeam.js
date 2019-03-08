@@ -59,6 +59,8 @@ const ViewTeam = ({mutate, match: { params: { teamId, channelId} }}) => {
                             const username = data.getUser.username
                             const isOwner = selectedTeam.admin
 
+                            console.log('DM users', data.getUser)
+
                             return (
 
                                 <AppLayout>
@@ -66,6 +68,7 @@ const ViewTeam = ({mutate, match: { params: { teamId, channelId} }}) => {
                                         team={selectedTeam}
                                         teams={sidebarTeams}
                                         username={username}
+                                        userId={data.getUser.id}
                                         isOwner={isOwner}
 
                                     />

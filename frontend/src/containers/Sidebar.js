@@ -47,7 +47,9 @@ class Sidebar extends React.Component {
 
     render () {
 
-        const { team, username, isOwner, teams } = this.props
+        const { team, username, userId, isOwner, teams } = this.props
+
+        console.log('team.directmessageusers', team.directMessageMembers, userId)
 
         return (
                                 <>
@@ -58,9 +60,10 @@ class Sidebar extends React.Component {
                                         teamName={team.name}
                                         teamId={team.id}  
                                         username={username}
+                                        userId={userId}
                                         channels={team.channels}
                                         isOwner={isOwner}
-                                        users={[{id:1, name: "SlackBot"}, {id:2, name: "User"}]}
+                                        users={team.directMessageMembers}
                                         onAddChannelClick={this.toggleAddChannelModal}
                                         onInvitePeopleClick={this.toggleInvitePeopleModal}
                                         onDirectMessageClick={this.toggleDirectMessageModal}

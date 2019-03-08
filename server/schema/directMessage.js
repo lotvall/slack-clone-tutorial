@@ -5,7 +5,7 @@ export default `
         text: String!   
         sender: User!
         receiverId: Int!
-        createdAt: String!
+        created_at: String!
     }
 
     type Query {

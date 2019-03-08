@@ -8,18 +8,15 @@ import { withRouter } from 'react-router-dom'
 const TEAM_MEMBERS_QUERY = gql`
     query ($teamId: Int! ){
         getTeamMembers(teamId: $teamId) {
-        username
-        id
+            username
+            id
         }
     }
-
 `
-class QueryContainer extends React.Component {
 
+class QueryContainer extends React.Component {
     render() {
-        const {teamId, open, onClose, history} = this.props
-        console.log(teamId)
-        console.log(history)
+        const {teamId, open, onClose} = this.props
 
         return (
             <Query query={TEAM_MEMBERS_QUERY} variables={{teamId}}>
@@ -38,7 +35,6 @@ class QueryContainer extends React.Component {
                                 teamMembers={teamMembers}
                                 teamId={teamId}
                                 loading={loading}
-                                history={history}
                             />
                         )
                     }
@@ -48,7 +44,7 @@ class QueryContainer extends React.Component {
     }
 }
 
-const DirectMessageModal = ({
+const DirectMessageModal = withRouter(({
     open, 
     onClose,
     teamMembers,
@@ -61,7 +57,8 @@ const DirectMessageModal = ({
     <Modal.Content>
         <Form>
             <Form.Field>
-                { !loading && <Downshift
+                { !loading && 
+                <Downshift
                     onChange={selectedUser => {
                         history.push(`/view-team/user/${teamId}/${selectedUser.id}`)
                         onClose()
@@ -88,7 +85,7 @@ const DirectMessageModal = ({
                                 .map((item, index) => (
                                 <List.Item
                                     {...getItemProps({
-                                    key: item.username,
+                                    key: item.id,
                                     index,
                                     item,
                                     style: {
@@ -114,9 +111,9 @@ const DirectMessageModal = ({
 
     </Modal.Content>
   </Modal>
-)
+))
 
-export default withRouter(QueryContainer)
+export default QueryContainer
 
 
 

@@ -14,7 +14,7 @@ const MESSAGES_QUERY = gql`
             user {
                 username
             }
-            createdAt
+            created_at
         }
     }
 `
@@ -22,7 +22,7 @@ const MESSAGE_SUBSCRIPTION = gql`
     subscription($channelId: Int!) {
         newChannelMessage(channelId: $channelId) {
         id
-        createdAt
+        created_at
         text
         user {
             username
@@ -32,7 +32,7 @@ const MESSAGE_SUBSCRIPTION = gql`
 `
 
 
- const message = ({ id, text, user, createdAt }) => (
+ const message = ({ id, text, user, created_at }) => (
     <Comment key = {`message-${id}`}>
         <Comment.Content>
             <Comment.Author as='a'>{ user.username }</Comment.Author>
@@ -40,7 +40,7 @@ const MESSAGE_SUBSCRIPTION = gql`
                 { /* Wed Feb 27 2019 20:06:40 GMT+0100 (GMT+01:00) */} 
                 
                 <div>
-                    { moment(createdAt,"ddd MMM D YYYY HH:mm:ss").fromNow()}
+                    { moment(created_at,"ddd MMM D YYYY HH:mm:ss").fromNow()}
                </div>
             </Comment.Metadata>
             <Comment.Text>{text}</Comment.Text>

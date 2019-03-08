@@ -70,6 +70,29 @@ export default {
         }),
     },
     Team: {
-        channels:({ id }, args, { models }) => models.Channel.findAll({where: { teamId: id }})
+        channels:({ id }, args, { models }) => models.Channel.findAll({where: { teamId: id }}),
+        directMessageMembers: ({ id }, args, { models, user }) =>
+            models.sequelize.query(
+                'select distinct on (u.id) u.id, u.username from users as u join direct_messages as dm on (u.id = dm.sender_id) or (u.id = dm.receiver_id) where (:currentUserId = dm.sender_id or :currentUserId = dm.receiver_id) and dm.team_id = :teamId',
+                {
+                replacements: { currentUserId: user.id, teamId: id },
+                model: models.User,
+                raw: true,
+                },
+            ),
+        // directMessageMembers:async ({ id }, { teamId }, { models, user }) => {
+        //     console.log('directMessageMembers being called')
+        //     const response = await models.User.findAll({ 
+        //         include:[{
+        //             model: models.DirectMessage,
+        //             where: {                        
+        //                 teamId, 
+        //                 [models.sequelize.Op.or]: [{senderId: user.id}, {receiverId: user.id}]
+        //             }
+        //         }]
+        //         }, { raw: true })
+                
+        //     console.log('', response)
+        //}
     }
 }

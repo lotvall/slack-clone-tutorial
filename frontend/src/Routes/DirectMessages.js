@@ -63,6 +63,7 @@ const DirectMessages = ({mutate, match: { params: { teamId, receiverId} }}) => {
                                         team={selectedTeam}
                                         teams={sidebarTeams}
                                         username={username}
+                                        userId={data.getUser.id}
                                         isOwner={isOwner}
 
                                     />

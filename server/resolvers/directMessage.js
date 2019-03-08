@@ -14,7 +14,7 @@ export default {
     Query: {
         directMessages: requiresAuth.createResolver(async (parent, { teamId, otherUserId }, {models, user}) => {
             const messages = await models.DirectMessage.findAll({
-                order: [['createdAt', 'ASC']],
+                order: [['created_at', 'ASC']],
                 where: { 
                     teamId, 
                     [models.sequelize.Op.or]: [{
@@ -27,7 +27,7 @@ export default {
             return messages.map(message => {
                 return {
                     ...message.dataValues,
-                    createdAt: '' + message.dataValues.createdAt,
+                    created_at: '' + message.dataValues.created_at,
                 }
             })
                 
@@ -58,7 +58,7 @@ export default {
                 //     newChannelMessage: {
                 //       ...message.dataValues,
                 //       user: currentUser.dataValues,
-                //       createdAt: '' + message.dataValues.createdAt,
+                //       created_at: '' + message.dataValues.created_at,
                 //     },
                 //   });
                 // };

@@ -6,23 +6,30 @@ import { requiresAuth } from '../permission'
 export default {
     Team: {
         admin: async (parent, args, {models, user }) => {
-            const teamId = parent.dataValues.id
+            console.log('problem med admin field tag2', parent)
+
+            const teamId = parent.id
             const userId = user.id
             const member = await models.Member.findOne({
-                where: { teamId, userId}
+                where: { team_id: teamId, user_id: userId}
             })
             const admin = member.dataValues.admin
             return admin
         }
     },
     User: {
-        teams: async (parent, args, { models, user }) => 
-            await models.Team.findAll({
-                include: [{
-                    model: models.User,
-                    where: { id: user.id },
-                }]   
-            }, { raw: true })
+        teams: (parent, args, { models, user }) =>{
+            console.log('problem med admin field tag1', user)
+            // problem med admin har
+            return models.sequelize.query(
+                'select * from teams as team join members as member on team.id = member.team_id where member.user_id = ?',
+                {
+                replacements: [user.id],
+                model: models.Team,
+                raw: true,
+                },
+            )
+        },
     },
     Query: {
         getUser: requiresAuth.createResolver((parent,args, { models, user }) => models.User.findOne({where: { id: user.id  } })),

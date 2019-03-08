@@ -14,7 +14,7 @@ const DIRECT_MESSAGES_QUERY = gql`
         sender {
             username
         }
-        createdAt
+        created_at
         }
     }
 `
@@ -22,7 +22,7 @@ const DIRECT_MESSAGES_QUERY = gql`
 //     subscription($channelId: Int!) {
 //         newChannelMessage(channelId: $channelId) {
 //         id
-//         createdAt
+//         created_at
 //         text
 //         user {
 //             username
@@ -32,7 +32,7 @@ const DIRECT_MESSAGES_QUERY = gql`
 // `
 
 
- const message = ({ id, text, sender, createdAt }) => (
+ const message = ({ id, text, sender, created_at }) => (
     <Comment key = {`message-${id}`}>
         <Comment.Content>
             <Comment.Author as='a'>{ sender.username }</Comment.Author>
@@ -40,7 +40,7 @@ const DIRECT_MESSAGES_QUERY = gql`
                 { /* Wed Feb 27 2019 20:06:40 GMT+0100 (GMT+01:00) */} 
                 
                 <div>
-                    { moment(createdAt,"ddd MMM D YYYY HH:mm:ss").fromNow()}
+                    { moment(created_at,"ddd MMM D YYYY HH:mm:ss").fromNow()}
                </div>
             </Comment.Metadata>
             <Comment.Text>{text}</Comment.Text>

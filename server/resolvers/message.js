@@ -47,13 +47,13 @@ export default {
         messages: requiresAuth.createResolver(async (parent, { channelId }, {models, user}) => {
             console.log('query msg', user)
             const messages = await models.Message.findAll({
-                order: [['createdAt', 'ASC']],
+                order: [['created_at', 'ASC']],
                 where: { channelId }
             }, { raw: true })
             return messages.map(message => {
                 return {
                     ...message.dataValues,
-                    createdAt: '' + message.dataValues.createdAt,
+                    created_at: '' + message.dataValues.created_at,
                 }
             })
                 
@@ -83,7 +83,7 @@ export default {
                 newChannelMessage: {
                   ...message.dataValues,
                   user: currentUser.dataValues,
-                  createdAt: '' + message.dataValues.createdAt,
+                  created_at: '' + message.dataValues.created_at,
                 },
               });
             };
