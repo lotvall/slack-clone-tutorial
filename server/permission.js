@@ -14,7 +14,7 @@ const createResolver = (resolver) => {
   
 export const requiresAuth = createResolver((parent, args, context) => {
     if (!context.user || !context.user.id) {
-        throw new Error('Not authenticated');
+        throw new Error('Not authenticated in the first requiresauth');
     }
 });
 
@@ -35,5 +35,25 @@ export const requiresTeamAccess = createResolver(async (parent, { channelId }, {
 export const requiresAdmin = requiresAuth.createResolver((parent, args, context) => {
     if (!context.user.isAdmin) {
         throw new Error('Requires admin access');
+    }
+});
+
+export const directMessageSubscription = requiresAuth.createResolver(async (parent, { teamId, otherUserId }, { models, user }) => {
+    if (!user || !user.id) {
+        throw new Error('Not authenticated in DM');
+    }
+
+    const you = await models.Member.findOne({
+        where: { teamId, userId: user.id },
+    });
+    const otherUser = await models.Member.findOne({
+        where: { teamId, userId: otherUserId },
+    });
+
+    if(!you) {
+        throw new Error ("You have to be a member of the team to subscribe to messages")
+    }
+    if(!otherUser) {
+        throw new Error ("The user is not a member of the team")
     }
 });

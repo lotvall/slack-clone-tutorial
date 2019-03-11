@@ -73,7 +73,7 @@ const DirectMessages = ({mutate, match: { params: { teamId, receiverId} }}) => {
                                     /> 
                                     }
                                     {  
-                                    <DirectMessageContainer teamId={teamId} otherUserId={receiverId}/>
+                                    <DirectMessageContainer teamId={teamIdInteger} otherUserId={receiverId}/>
                                     }
                                     <SendMessage 
                                         onSubmit={async (text) => {

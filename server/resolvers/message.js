@@ -1,25 +1,8 @@
 import { requiresTeamAccess, requiresAuth } from '../permission'
-import { PubSub, withFilter } from 'apollo-server'
-
-const pubsub= new PubSub()
+import { withFilter } from 'apollo-server'
+import pubsub from '../pubsub'
 
 const NEW_CHANNEL_MESSAGE = "NEW_CHANNEL_MESSAGE"
-
-const isChannelMember = async (channelId, models, user) => {
-    // 
-    console.log('is part of team?',channelId, user)
-    const channel = await models.Channel.findOne({ where: { id: channelId }})
-    console.log('a channel', channel.dataValues.teamId, user)
-
-    const member = await models.Member.findOne({where: { teamId: channel.dataValues.teamId , userId: user.id}})
-    console.log('a member', member)
-
-    if(!member) {
-        console.log("You have to be a member of the team to subscribe to messages")
-        throw new Error("You have to be a member of the team to subscribe to messages")
-    }
-    return true
-}
 
 export default {
     
@@ -34,10 +17,15 @@ export default {
     Subscription: {
         newChannelMessage: {
             subscribe: requiresTeamAccess.createResolver(withFilter((parent, { channelId } , { models, user }) => {
-                return pubsub.asyncIterator("NEW_CHANNEL_MESSAGE" )            
+                console.log('do we have user here?', user)
+                return pubsub.asyncIterator(NEW_CHANNEL_MESSAGE)            
             },
-            (payload, args) => {
-               return payload.channelId === args.channelId ;
+            (payload, args, { user }) => {
+                console.log('payload MS', payload)
+                console.log('args MS', args)
+                console.log('user MS', user)
+
+                return payload.channelId === args.channelId ;
             }))
         }
 

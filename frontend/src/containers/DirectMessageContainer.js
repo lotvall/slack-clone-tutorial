@@ -18,18 +18,18 @@ const DIRECT_MESSAGES_QUERY = gql`
         }
     }
 `
-// const MESSAGE_SUBSCRIPTION = gql`
-//     subscription($channelId: Int!) {
-//         newChannelMessage(channelId: $channelId) {
-//         id
-//         created_at
-//         text
-//         user {
-//             username
-//         }
-//         }
-//     }
-// `
+const DIRECT_MESSAGE_SUBSCRIPTION = gql`
+    subscription($teamId: Int!, $otherUserId: Int!) {
+        newDirectMessage(teamId: $teamId, otherUserId: $otherUserId) {
+            id
+            created_at
+            text
+            sender {
+                username
+            }
+        }
+    }
+`
 
 
  const message = ({ id, text, sender, created_at }) => (
@@ -53,31 +53,34 @@ const DIRECT_MESSAGES_QUERY = gql`
 
 class AllMessages extends React.Component {
 
-    // componentWillMount() {
-    //     console.log('props: ', this.props.channelId)
-    //     console.log(`subscribing to ${this.props.channelId}`)
+    componentWillMount() {
+        console.log('props: ', this.props)
+        console.log(`subscribing to ${this.props}`)
+        console.log('hmmm2', this.props.teamId, this.props.otherUserId)
 
-    //     this.unscubscribe = this.props.subscribeToNewMessages(this.props.channelId);
-    // }
 
-    // componentWillReceiveProps({ channelId }) {
-    //     console.log('props: ', this.props.channelId, channelId)
-    //     if (this.props.channelId !== channelId) { 
-    //         if(this.unscubscribe) {
-    //             console.log(`unsubscribing to ${this.props.channelId}`)
-    //             this.unscubscribe(this.props.channelId)
-    //         }
-    //         console.log(`subscribing to ${channelId}`)
+        this.unscubscribe = this.props.subscribeToNewDirectMessages(this.props.teamId, this.props.otherUserId);
+    }
 
-    //         this.unscubscribe = this.props.subscribeToNewMessages(channelId);
-    //     }
-    // }
-    // componentWillUnmount() {
-    //     if(this.unscubscribe) {
-    //         console.log(`unsubscribing to ${this.props.channelId}`)
-    //         this.unscubscribe(this.props.channelId)
-    //     }
-    // }
+    componentWillReceiveProps({teamId, otherUserId}) {
+        console.log('props: ', this.props)
+        if (this.props.teamId !== teamId || this.props.otherUserId !== otherUserId ){ 
+            if(this.unscubscribe) {
+                console.log(`unsubscribing to dm`)
+
+                this.unscubscribe()
+            }
+            console.log(`subscribing to new dm`)
+
+            this.unscubscribe = this.props.subscribeToNewMessages(teamId, otherUserId);
+        }
+    }
+    componentWillUnmount() {
+        if(this.unscubscribe) {
+            console.log(`unsubscribing to ${this.props.channelId}`)
+            this.unscubscribe(this.props.channelId)
+        }
+    }
 
     render() {
         const {messages} = this.props
@@ -106,11 +109,34 @@ class DirectMessageContainer extends React.Component {
                     if (loading) return null
                     if(error) console.log(error)
                     if (data) console.log('le data', data)
+                    console.log('hmmm', teamId, otherUserId)
                     const messages = data.directMessages
                     return (
 
                         <AllMessages 
                             messages={messages} 
+                            teamId={teamId}
+                            otherUserId={otherUserId}
+                            subscribeToNewDirectMessages = {(teamId, otherUserId) => (
+                                subscribeToMore({
+                                    document: DIRECT_MESSAGE_SUBSCRIPTION,
+                                    variables: {teamId: parseInt(teamId), otherUserId: parseInt(otherUserId)},
+                                    fetchPolicy: 'network-only',
+                                    updateQuery: (prev, { subscriptionData }) => {
+                                        if (!subscriptionData.data) {
+                                            console.log('prev', prev)
+                                            return prev;
+                                            
+                                        }
+                                        console.log('not prev', prev)
+
+                                        return {
+                                            ...prev,
+                                            directMessages: [...prev.directMessages, subscriptionData.data.newDirectMessage]
+                                        }
+                                    },
+                                })
+                            ) }
                             
                         />
                     )

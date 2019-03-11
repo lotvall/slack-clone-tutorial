@@ -56,7 +56,10 @@ const server =  new ApolloServer({ typeDefs, resolvers,  playground: true,
 
     // If we build the context for subscriptions, return the context generated in the onConnect callback.
     // In this example `connection.context` is `{ extended: 'context' }`
-    console.log('is the user here', connection)
+
+    connection ? 
+      console.log('is the user here connection', connection.context.user) : 
+      console.log('is the user here req', req)
 
     // retrieve user from the request item, added in addUser
     // add the user to the context
