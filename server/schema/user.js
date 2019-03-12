@@ -13,6 +13,7 @@ export default `
 
     type Query {
         getUser: User!
+        singleUser(userId: Int!): User
         allUsers: [User!]!
     }
 

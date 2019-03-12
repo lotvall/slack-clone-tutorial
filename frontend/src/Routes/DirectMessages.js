@@ -10,7 +10,7 @@ import DirectMessageContainer from '../containers/DirectMessageContainer'
 
 import { Query, graphql } from 'react-apollo'
 import findIndex from 'lodash/findIndex'
-import { USER_QUERY } from '../graphql/user'
+import { DIRECT_MESSAGE_USER_QUERY } from '../graphql/user'
 import { Redirect } from 'react-router-dom'
 import gql from 'graphql-tag'
 
@@ -22,10 +22,10 @@ const CREATE_DIRECT_MESSAGE_MUTATION = gql`
 `
 
 const DirectMessages = ({mutate, match: { params: { teamId, receiverId} }}) => {
-
+    console.log(receiverId)
     return (
 
-        <Query query={USER_QUERY}>
+        <Query query={DIRECT_MESSAGE_USER_QUERY} variables={{userId: parseInt(receiverId, 10)}}>
                 {
                     ({loading, error, data}) => {
                         if (loading) {
@@ -69,7 +69,7 @@ const DirectMessages = ({mutate, match: { params: { teamId, receiverId} }}) => {
                                     />
                                     {  
                                     <Header
-                                        channelName={"a username goes here"}
+                                        channelName={data.singleUser.username}
                                     /> 
                                     }
                                     {  
@@ -87,7 +87,7 @@ const DirectMessages = ({mutate, match: { params: { teamId, receiverId} }}) => {
                                                     createDirectMessage: true, 
                                                 },
                                                 update: (store) => {
-                                                        const data = store.readQuery({ query: USER_QUERY })
+                                                        const data = store.readQuery({ query: DIRECT_MESSAGE_USER_QUERY })
                                                         const teamIdx2 = findIndex(data.getUser.teams, ['id', selectedTeam.id ])
                                                         console.log(teamIdx2)
                                                         const notAlreadyThere = data.getUser.teams[teamIdx2].directMessageMembers.every(member => member.id !== parseInt(receiverId, 10))
@@ -98,13 +98,13 @@ const DirectMessages = ({mutate, match: { params: { teamId, receiverId} }}) => {
                                                                 username: "Someone"
                                     
                                                             })
-                                                            store.writeQuery({query: USER_QUERY, data})
+                                                            store.writeQuery({query: DIRECT_MESSAGE_USER_QUERY, data})
                                                         }
                                                 }
                                                 
                                             })
                                         }}
-                                        placeholder={receiverId} 
+                                        placeholder={data.singleUser.username} 
                                     />
                                 </AppLayout>
 
