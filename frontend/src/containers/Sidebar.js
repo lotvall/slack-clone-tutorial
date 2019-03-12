@@ -77,6 +77,7 @@ class Sidebar extends React.Component {
                                         open={this.state.openInvitePeopleModal}
                                         onClose={this.toggleInvitePeopleModal}
                                         teamId={team.id}
+                                        userId={userId}
                                     />
                                     <DirectMessageModal 
                                         open={this.state.openDirectMessageModal}

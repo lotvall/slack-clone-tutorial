@@ -5,6 +5,8 @@ import gql from 'graphql-tag'
 import { compose, graphql } from 'react-apollo';
 import normalizeErrors from '../normalizeErrors'
 
+import { USER_QUERY } from '../graphql/user'
+import findIndex from 'lodash/findIndex'
 
 
 const ADD_TEAM_MEMBER_MUTATION = gql`
@@ -68,7 +70,8 @@ export default compose(
                 variables: { 
                     teamId: parseInt(teamId, 10), 
                     email: values.email
-                },
+                }
+
             })
             console.log(response)
 

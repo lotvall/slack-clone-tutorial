@@ -77,12 +77,31 @@ const DirectMessages = ({mutate, match: { params: { teamId, receiverId} }}) => {
                                     }
                                     <SendMessage 
                                         onSubmit={async (text) => {
+                                            console.log('team id int' , teamIdInteger)
                                             await mutate({
                                                 variables:{
                                                     text,
                                                     receiverId: parseInt(receiverId),
                                                     teamId: teamIdInteger
+                                                }, optimisticResponse: {
+                                                    createDirectMessage: true, 
+                                                },
+                                                update: (store) => {
+                                                        const data = store.readQuery({ query: USER_QUERY })
+                                                        const teamIdx2 = findIndex(data.getUser.teams, ['id', selectedTeam.id ])
+                                                        console.log(teamIdx2)
+                                                        const notAlreadyThere = data.getUser.teams[teamIdx2].directMessageMembers.every(member => member.id !== parseInt(receiverId, 10))
+                                                        if (notAlreadyThere) {
+                                                            data.getUser.teams[teamIdx2].directMessageMembers.push({
+                                                                __typename: "User",
+                                                                id: parseInt(receiverId, 10),
+                                                                username: "Someone"
+                                    
+                                                            })
+                                                            store.writeQuery({query: USER_QUERY, data})
+                                                        }
                                                 }
+                                                
                                             })
                                         }}
                                         placeholder={receiverId} 
