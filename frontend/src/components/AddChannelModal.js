@@ -79,20 +79,19 @@ export default compose(
                 },
                 update: (store, { data: { createChannel }}) => {
                     const { ok, channel } = createChannel
-
-                    if (ok) {
-                        const data = store.readQuery({ query: USER_QUERY })
-                        const teamIdx = findIndex(data.allTeams, ['id', teamId ])
-                        data.allTeams[teamIdx].channels.push(channel)
-                        store.writeQuery({query: USER_QUERY, data})
-                    } else {
+                    if(!ok) {
                         return
                     }
+                        const data = store.readQuery({ query: USER_QUERY })
+                        console.log('local storage data', data)
+                        const teamIdx = findIndex(data.getUser.teams, ['id', teamId ])
+                        data.getUser.teams[teamIdx].channels.push(channel)
+                        store.writeQuery({query: USER_QUERY, data})
                     
                 }
             })
-            setSubmitting(false)
             onClose()
+            setSubmitting(false)
         },
     })
 )(AddChannelModal)
