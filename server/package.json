@@ -4,15 +4,20 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon --exec babel-node index.js"
+    "start": "nodemon --exec babel-node index.js",
+    "test-server": "TEST_DB=testslack nodemon --exec babel-node index.js",
+    "test": "jest"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "axios": "^0.18.0",
     "babel-cli": "^6.26.0",
+    "babel-jest": "^24.5.0",
     "babel-preset-env": "^1.7.0",
     "babel-preset-stage-3": "^6.24.1",
+    "jest": "^24.5.0",
     "nodemon": "^1.18.10"
   },
   "dependencies": {

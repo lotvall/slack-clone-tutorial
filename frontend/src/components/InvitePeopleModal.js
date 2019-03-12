@@ -50,7 +50,6 @@ const InvitePeopleModal = ({
             touched.email && errors.email &&
             <Message
                 error
-                header='There was some errors with your submission'
             >
                 { errors.email[0] }
             </Message>
@@ -83,7 +82,14 @@ export default compose(
                 onClose()
             } else {
                 setSubmitting(false)
-                setErrors(normalizeErrors(errors))
+                const filteredErrors = errors.filter(e => e.message !== "user_id must be unique")
+                if (errors.length !== filteredErrors.length) {
+                    filteredErrors.push({
+                        path: "email",
+                        message: "This user is already a part of the team"                        
+                    })
+                }
+                setErrors(normalizeErrors(filteredErrors))
             }
             
         },
