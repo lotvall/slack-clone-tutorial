@@ -1,18 +1,9 @@
 import React from 'react'
 import { Form, Input, Button, Modal, List } from 'semantic-ui-react'
 import Downshift from 'downshift'
-import gql from 'graphql-tag'
 import { Query } from 'react-apollo'
 import { withRouter } from 'react-router-dom'
-
-const TEAM_MEMBERS_QUERY = gql`
-    query ($teamId: Int! ){
-        getTeamMembers(teamId: $teamId) {
-            username
-            id
-        }
-    }
-`
+import { TEAM_MEMBERS_QUERY } from '../graphql/team'
 
 class QueryContainer extends React.Component {
     render() {

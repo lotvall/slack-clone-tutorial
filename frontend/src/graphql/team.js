@@ -14,3 +14,12 @@ mutation($name: String!) {
     }
 }
 `
+
+export const TEAM_MEMBERS_QUERY = gql`
+query ($teamId: Int! ){
+    getTeamMembers(teamId: $teamId) {
+        username
+        id
+    }
+}
+`

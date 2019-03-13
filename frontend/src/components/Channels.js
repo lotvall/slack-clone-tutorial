@@ -44,7 +44,6 @@ const channel = ({ id, name }, teamId) => <Link to={`/view-team/${teamId}/${id}`
 const user = ({ id, username }, userId, teamId) => (
   
   <Link to={`/view-team/user/${teamId}/${id}`} key={`user-${id}`}>
-    {console.log(id, userId)}
     <SideBarListItem >
       <Bubble /> {username} {userId === id && "(you)"}
     </SideBarListItem>

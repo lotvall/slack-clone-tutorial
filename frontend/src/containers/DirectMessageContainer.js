@@ -106,7 +106,10 @@ class DirectMessageContainer extends React.Component {
             <Query query={DIRECT_MESSAGES_QUERY} variables={{teamId: parseInt(teamId), otherUserId: parseInt(otherUserId)}} fetchPolicy={"network-only"}>
             {
                 ({ subscribeToMore, loading, error, data}) => {
-                    if (loading) return null
+                    if (loading)  {
+                        return null
+                    }
+                    
                     if(error) console.log(error)
                     if (data) console.log('le data', data)
                     console.log('hmmm', teamId, otherUserId)

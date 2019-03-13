@@ -1,10 +1,11 @@
 import React from 'react'
-import { Form, Input, Button, Modal } from 'semantic-ui-react'
+import { Checkbox, Form, Input, Button, Modal } from 'semantic-ui-react'
 import { withFormik } from 'formik'
 import gql from 'graphql-tag'
 import { compose, graphql } from 'react-apollo';
 import { USER_QUERY } from '../graphql/user'
 import findIndex from 'lodash/findIndex'
+import SelectMultiUsers from './SelectMultiUsers'
 
 
 
@@ -21,6 +22,7 @@ const CREATE_CHANNEL_MUTATION = gql`
 `
 
 const AddChannelModal = ({
+    teamId,
     open, 
     onClose, 
     values,
@@ -28,7 +30,8 @@ const AddChannelModal = ({
     handleBlur,
     handleSubmit,
     isSubmitting,
-    resetForm
+    resetForm,
+    setFieldValue
 }) => (
     <Modal open={open} onClose={() => {
         resetForm()
@@ -40,6 +43,23 @@ const AddChannelModal = ({
             <Form.Field>
                 <Input value={values.name} onChange={handleChange} onBlur={handleBlur} name="name" fluid placeholder="Channel name"/>
             </Form.Field>
+            <Form.Field>
+                <Checkbox 
+                    value={!values.public} label='Private'
+                    onChange={(e, { checked }) => setFieldValue('public', !checked)}
+                    toggle 
+
+                />
+            </Form.Field>
+            {
+                !values.public && <Form.Field>
+                <SelectMultiUsers
+                    teamId={teamId}
+                    selectedMembers={values.members}
+                    handleChange={(e, { value }) => setFieldValue('members', value)}
+                    placeholder="Select members to invite"
+                />
+            </Form.Field>}
             <Form.Group width="equal">
                 <Button disabled={isSubmitting} fluid onClick={(e) => {
                     resetForm()
@@ -57,7 +77,7 @@ const AddChannelModal = ({
 export default compose(
     graphql(CREATE_CHANNEL_MUTATION), 
     withFormik({
-        mapPropsToValues: () => ({ name: '' }),
+        mapPropsToValues: () => ({ name: '', members: [], public: true }),
     
         handleSubmit: async (values, { props: { teamId, mutate,  onClose }, setSubmitting }) => {
             await mutate({ 
