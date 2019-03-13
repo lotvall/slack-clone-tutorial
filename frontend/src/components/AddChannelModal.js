@@ -10,8 +10,8 @@ import SelectMultiUsers from './SelectMultiUsers'
 
 
 const CREATE_CHANNEL_MUTATION = gql`
-    mutation($teamId: Int!, $name: String!) {
-        createChannel(teamId: $teamId, name: $name) {
+    mutation($teamId: Int!, $name: String!, $public: Boolean!, $members: [Int!]) {
+        createChannel(teamId: $teamId, name: $name, public: $public, members: $members) {
             ok
             channel {
                 id
@@ -82,7 +82,9 @@ export default compose(
         handleSubmit: async (values, { props: { teamId, mutate,  onClose }, setSubmitting }) => {
             await mutate({ 
                 variables: { 
-                    teamId: parseInt(teamId, 10), 
+                    teamId: parseInt(teamId, 10),
+                    public: values.public,
+                    members: values.members, 
                     name: values.name
                 }, optimisticResponse: {
                     __typename: "Mutation",
