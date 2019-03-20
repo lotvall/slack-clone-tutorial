@@ -51,6 +51,15 @@ class Sidebar extends React.Component {
 
         console.log('team.directmessageusers', team.directMessageMembers, userId)
 
+        const channels = []
+        const dmChannels = []
+        team.channels.forEach(c => {
+            if(c.dm) {
+                dmChannels.push(c)
+            } else {
+                channels.push(c)
+            }
+        })
         return (
                                 <>
                                     <Teams
@@ -61,9 +70,9 @@ class Sidebar extends React.Component {
                                         teamId={team.id}  
                                         username={username}
                                         userId={userId}
-                                        channels={team.channels}
+                                        channels={channels}
                                         isOwner={isOwner}
-                                        users={team.directMessageMembers}
+                                        dmChannels={dmChannels}
                                         onAddChannelClick={this.toggleAddChannelModal}
                                         onInvitePeopleClick={this.toggleInvitePeopleModal}
                                         onDirectMessageClick={this.toggleDirectMessageModal}
@@ -72,6 +81,7 @@ class Sidebar extends React.Component {
                                         open={this.state.openAddChannelModal}
                                         onClose={this.toggleAddChannelModal}
                                         teamId={team.id}
+                                        userId={userId}
                                     />
                                     <InvitePeopleModal 
                                         open={this.state.openInvitePeopleModal}
@@ -83,6 +93,7 @@ class Sidebar extends React.Component {
                                         open={this.state.openDirectMessageModal}
                                         onClose={this.toggleDirectMessageModal}
                                         teamId={team.id}
+                                        userId={userId}
                                     />
                                 
                                 </>

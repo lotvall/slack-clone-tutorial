@@ -23,10 +23,10 @@ const ViewTeam = ({mutate, match: { params: { teamId, channelId} }}) => {
 
     return (
 
-        <Query query={USER_QUERY}>
+        <Query query={USER_QUERY} fetchPolicy={"network-only"}>
                 {
                     ({loading, error, data}) => {
-                        if (loading) {
+                        if (loading || !data) {
                             return null
                         }
                         if (error) {

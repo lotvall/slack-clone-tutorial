@@ -1,13 +1,17 @@
 import React from 'react'
-import { Form, Input, Button, Modal, List } from 'semantic-ui-react'
-import Downshift from 'downshift'
-import { Query } from 'react-apollo'
-import { withRouter } from 'react-router-dom'
+import { Form, Button, Modal } from 'semantic-ui-react'
+import { Mutation, Query } from 'react-apollo'
+import { withRouter , Redirect} from 'react-router-dom'
 import { TEAM_MEMBERS_QUERY } from '../graphql/team'
+import {Formik} from 'formik'
+import SelectMultiUsers from './SelectMultiUsers'
+import { CREATE_DMCHANNEL_MUTATION } from '../graphql/channel'
+import { USER_QUERY } from '../graphql/user';
+import { findIndex } from 'lodash'
 
 class QueryContainer extends React.Component {
     render() {
-        const {teamId, open, onClose} = this.props
+        const {teamId, open, onClose, userId} = this.props
 
         return (
             <Query query={TEAM_MEMBERS_QUERY} variables={{teamId}}>
@@ -26,6 +30,7 @@ class QueryContainer extends React.Component {
                                 teamMembers={teamMembers}
                                 teamId={teamId}
                                 loading={loading}
+                                userId={userId}
                             />
                         )
                     }
@@ -38,70 +43,77 @@ class QueryContainer extends React.Component {
 const DirectMessageModal = withRouter(({
     open, 
     onClose,
-    teamMembers,
-    loading,
     teamId,
+    userId,
     history
 }) => (
-  <Modal open={open} onClose={onClose}>
-    <Modal.Header>Direct Message</Modal.Header>
-    <Modal.Content>
-        <Form>
-            <Form.Field>
-                { !loading && 
-                <Downshift
-                    onChange={selectedUser => {
-                        history.push(`/view-team/user/${teamId}/${selectedUser.id}`)
-                        onClose()
-                    }}
-                    itemToString={item => (item ? item.username : '')}
-                >
-                    {({
-                    getInputProps,
-                    getItemProps,
-                    getLabelProps,
-                    getMenuProps,
-                    isOpen,
-                    inputValue,
-                    highlightedIndex,
-                    selectedItem,
-                    }) => (
-                    <div>
-                        <Input {...getInputProps({placeholder: "Search users"})} fluid/>
-                        <List {...getMenuProps()}>
-                        {isOpen
-                            ? teamMembers
-                            
-                                .filter(item => !inputValue || item.username.includes(inputValue))
-                                .map((item, index) => (
-                                <List.Item
-                                    {...getItemProps({
-                                    key: item.id,
-                                    index,
-                                    item,
-                                    style: {
-                                        backgroundColor:
-                                        highlightedIndex === index ? 'lightgray' : null,
-                                        fontWeight: selectedItem === item ? 'bold' : 'normal',
-                                    },
-                                    })}
-                                >
-                                    {item.username}
-                                </List.Item>
-                                ))
-                            : null}
-                        </List>
-                    </div>
-                    )}
-                </Downshift>}
-            </Form.Field>
-            <Form.Group width="equal">
-                <Button fluid onClick={onClose}>Cancel</Button>
-            </Form.Group>
-        </Form>
+    <Mutation mutation={CREATE_DMCHANNEL_MUTATION} >
+        {(createDMChannel, { data }) => (
+            <Modal open={open} onClose={onClose}>
+                <Modal.Header>Direct Message</Modal.Header>
+                <Modal.Content>
 
-    </Modal.Content>
-  </Modal>
+                    <Formik
+                        initialValues={{ members: [] }}
+                        onSubmit={ async ({members}, { setSubmitting } ) => {
+                            const response = await createDMChannel({ 
+                                variables: { 
+                                    teamId: parseInt(teamId, 10),
+                                    members, 
+                                }, update: (store, { data: { createDMChannel }}) => {
+                                    const { id, name } = createDMChannel
+                                    const data = store.readQuery({ query: USER_QUERY })
+                                    const teamIdx = findIndex(data.getUser.teams, ['id', teamId])
+                                    const notInChannelList = data.getUser.teams[teamIdx].channels.every(c => c.id !== id )
+                                    if(notInChannelList) {
+                                        data.getUser.teams[teamIdx].channels.push({
+                                            __typename: 'Channel',
+                                            id,
+                                            name,
+                                            dm: true,
+                                        })
+                                        store.writeQuery({query: USER_QUERY, data})
+                                    }
+                                }
+                            })
+                            const DMChannelId = response.data.createDMChannel
+                            console.log(response, typeof DMChannelId)
+                            onClose()
+                            setSubmitting(false)
+                            if (typeof DMChannelId === "number"){
+                                history.push(`/view-team/${teamId}/${DMChannelId}`)
+                            }
+                        }}
+                        render={({values, setFieldValue, isSubmitting, resetForm, handleSubmit}) => (
+                            <Form>
+                            <Form.Field>
+                                <SelectMultiUsers
+                                    teamId={teamId}
+                                    selectedMembers={values.members}
+                                    handleChange={(e, { value }) => setFieldValue('members', value)}
+                                    placeholder="Select members to message"
+                                    userId = {userId}
+                                />
+                            </Form.Field>
+                            <Form.Group width="equal">
+                                <Button disabled={isSubmitting} fluid onClick={(e) => {
+                                    resetForm()
+                                    onClose()
+                                }}>Cancel</Button>
+                            </Form.Group>
+                            <Form.Group width="equal">
+                                <Button disabled={isSubmitting} fluid onClick={handleSubmit}>Start messaging</Button>
+                            </Form.Group>
+                        </Form>
+                        )}
+                    />
+            </Modal.Content>
+        </Modal>
+
+        )}
+    </Mutation>
+
+    
 ))
 
 export default QueryContainer
