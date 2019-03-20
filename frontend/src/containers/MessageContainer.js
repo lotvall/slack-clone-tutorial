@@ -2,13 +2,13 @@ import React from 'react'
 import { Query } from 'react-apollo';
 import gql from 'graphql-tag'
 import Messages from '../components/Messages'
-import { Comment } from 'semantic-ui-react'
+import { Button, Comment } from 'semantic-ui-react'
 import moment from 'moment'
 
 
 const MESSAGES_QUERY = gql`
-    query($channelId: Int!){
-        messages(channelId: $channelId) {
+    query($offset: Int!, $channelId: Int!){
+        messages(offset: $offset, channelId: $channelId) {
             id
             text
             user {
@@ -53,6 +53,9 @@ const MESSAGE_SUBSCRIPTION = gql`
 
 class AllMessages extends React.Component {
 
+    state = {
+        hasMoreMessages: true
+    }
     componentWillMount() {
         console.log('props: ', this.props.channelId)
         console.log(`subscribing to ${this.props.channelId}`)
@@ -80,12 +83,30 @@ class AllMessages extends React.Component {
     }
 
     render() {
-        const {messages} = this.props
+        const {messages, channelId, fetchMore} = this.props
         return (
             <Messages
                             
             >
                 <Comment.Group>
+                    { this.state.hasMoreMessages && <Button onClick={() => fetchMore({
+                        variables: {
+                            channelId,
+                            offset: messages.length 
+                        },
+                        updateQuery: (prev, { fetchMoreResult }) => {
+                            if (!fetchMoreResult) {
+                                return prev;
+                            }
+                            if(fetchMoreResult.messages.length < 35) {
+                                this.setState({hasMoreMessages: false})
+                            }
+                            return {
+                                ...prev,
+                                messages: [ ...fetchMoreResult.messages, ...prev.messages]
+                            }
+                        }
+                    })}>Load more</Button> }
                     { messages.map(message) }
          
                 </Comment.Group>
@@ -100,9 +121,13 @@ class MessageContainer extends React.Component {
 
         const {channelId} = this.props
         return (
-            <Query query={MESSAGES_QUERY} variables={{channelId}} fetchPolicy={"network-only"}>
+            <Query 
+                query={MESSAGES_QUERY} 
+                variables={{channelId, offset: 0}} 
+                fetchPolicy={"network-only"}
+            >
             {
-                ({ subscribeToMore, loading, error, data}) => {
+                ({ fetchMore, subscribeToMore, loading, error, data}) => {
                     if (loading) return null
                     if(error) console.log(error)
                     if (data) console.log(data)
@@ -113,6 +138,7 @@ class MessageContainer extends React.Component {
                         <AllMessages 
                             messages={messages}
                             channelId={channelId}
+                            fetchMore={fetchMore}
                             subscribeToNewMessages = {(channelId) => (
                                 subscribeToMore({
                                     document: MESSAGE_SUBSCRIPTION,

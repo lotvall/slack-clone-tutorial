@@ -21,9 +21,6 @@ export default {
                 return pubsub.asyncIterator(NEW_CHANNEL_MESSAGE)            
             },
             (payload, args, { user }) => {
-                console.log('payload MS', payload)
-                console.log('args MS', args)
-                console.log('user MS', user)
 
                 return payload.channelId === args.channelId ;
             }))
@@ -32,7 +29,7 @@ export default {
     },
 
     Query: {
-        messages: requiresAuth.createResolver(async (parent, { channelId }, {models, user}) => {
+        messages: requiresAuth.createResolver(async (parent, { offset, channelId }, {models, user}) => {
             const channel = await models.Channel.findOne({raw: true, where: {id: channelId}})
 
             if (!channel.public) {
@@ -42,10 +39,10 @@ export default {
                 }
             }
             const messages = await models.Message.findAll({
-                order: [['created_at', 'ASC']],
-                where: { channelId }
+                order: [['created_at', 'DESC']], where: { channelId }, limit: 35, offset
             }, { raw: true })
-            return messages.map(message => {
+            return messages.reverse().map(message => {
+                console.log(message.dataValues.created_at)
                 return {
                     ...message.dataValues,
                     created_at: '' + message.dataValues.created_at,
