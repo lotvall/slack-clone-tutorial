@@ -13,12 +13,6 @@ import findIndex from 'lodash/findIndex'
 import { USER_QUERY } from '../graphql/user'
 import { Redirect } from 'react-router-dom'
 
-const CREATE_MESSAGE_MUTATION = gql`
-    mutation ($channelId:Int!, $text: String!){
-        createMessage(channelId: $channelId, text: $text)
-    }
-`
-
 const ViewTeam = ({mutate, match: { params: { teamId, channelId} }}) => {
 
     return (
@@ -78,15 +72,9 @@ const ViewTeam = ({mutate, match: { params: { teamId, channelId} }}) => {
                                     /> 
                                     }
                                     { selectedChannel && 
-                                    <MessageContainer channelId = { selectedChannel.id }/>
+                                    <MessageContainer channelId = { selectedChannel.id } channelName={selectedChannel.name}/>
                                     }
-                                    <SendMessage 
-                                        onSubmit={async (text) =>{
-                                            await mutate({variables: {text, channelId: selectedChannel.id}})
-                                        }}
-                                        placeholder={selectedChannel.name}
-                                        channelId={selectedChannel.id}
-                                    />
+                                    
                                 </AppLayout>
 
                             )
@@ -97,4 +85,4 @@ const ViewTeam = ({mutate, match: { params: { teamId, channelId} }}) => {
     )
 }
 
-export default graphql(CREATE_MESSAGE_MUTATION)(ViewTeam)
+export default (ViewTeam)

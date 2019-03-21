@@ -75,7 +75,7 @@ export default compose(
                     teamId: parseInt(teamId, 10),
                     public: values.public,
                     members: values.members, 
-                    name: values.name
+                    name: values.name,
                 }, optimisticResponse: {
                     __typename: "Mutation",
                     createChannel: {
@@ -84,7 +84,6 @@ export default compose(
                             __typename: "Channel",
                             id: -1,
                             name: values.name,
-                            dm: false
                         },
                         __typename: "ChannelResponse"
                         
@@ -98,7 +97,7 @@ export default compose(
                         const data = store.readQuery({ query: USER_QUERY })
                         console.log('local storage data', data)
                         const teamIdx = findIndex(data.getUser.teams, ['id', teamId ])
-                        data.getUser.teams[teamIdx].channels.push(channel)
+                        data.getUser.teams[teamIdx].channels.push({...channel, dm: false})
                         store.writeQuery({query: USER_QUERY, data})
                     
                 }

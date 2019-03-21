@@ -76,7 +76,7 @@ const DirectMessageModal = withRouter(({
                                     }
                                 }
                             })
-                            const DMChannelId = response.data.createDMChannel
+                            const DMChannelId = response.data.createDMChannel.id
                             console.log(response, typeof DMChannelId)
                             onClose()
                             setSubmitting(false)
@@ -96,7 +96,7 @@ const DirectMessageModal = withRouter(({
                                 />
                             </Form.Field>
                             <Form.Group width="equal">
-                                <Button disabled={isSubmitting} fluid onClick={(e) => {
+                                <Button type="submit" disabled={isSubmitting} fluid onClick={(e) => {
                                     resetForm()
                                     onClose()
                                 }}>Cancel</Button>

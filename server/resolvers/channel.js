@@ -70,6 +70,7 @@ export default {
             }
         }),
         createChannel: requiresAuth.createResolver(async (parent, args, {models, user}) => {
+            console.log('create channel args', args)
             try {
                 const member = await models.Member.findOne({where: { teamId: args.teamId, userId: user.id }}, { raw: true })
                 if(!member.admin) {
@@ -85,7 +86,7 @@ export default {
                 }
                 const response = await models.sequelize.transaction(async (transaction) => {
 
-                    const channel = await models.Channel.create(args, {transaction});
+                    const channel = await models.Channel.create({...args, dm: false}, {transaction});
                     if(!args.public) {
                         const members = args.members.filter(m=> m !== user.id)
                         members.push(user.id)

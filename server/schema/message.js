@@ -12,8 +12,13 @@ export default `
         newChannelMessage(channelId: Int!) : Message!
     }
 
+    type MessageResponse {
+        cursor: String
+        messages: [Message!]!
+    }
+
     type Query {
-        messages(cursor: String, channelId: Int!) :  [Message!]!
+        messages(cursor: String, channelId: Int!) :  MessageResponse!
     }
 
     type Mutation {
