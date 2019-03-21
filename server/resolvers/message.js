@@ -29,7 +29,7 @@ export default {
     },
 
     Query: {
-        messages: requiresAuth.createResolver(async (parent, { offset, channelId }, {models, user}) => {
+        messages: requiresAuth.createResolver(async (parent, { cursor, channelId }, {models, user}) => {
             const channel = await models.Channel.findOne({raw: true, where: {id: channelId}})
 
             if (!channel.public) {
@@ -38,10 +38,21 @@ export default {
                     throw new Error ('Not Authorized')
                 }
             }
-            const messages = await models.Message.findAll({
-                order: [['created_at', 'DESC']], where: { channelId }, limit: 35, offset
-            }, { raw: true })
-            return messages.reverse().map(message => {
+
+            const options = {
+                order: [['created_at', 'DESC']], 
+                where: { channelId }, 
+                limit: 35, 
+            }
+
+            // find all elements after the cursor
+            if (cursor){
+                options.where.created_at = {
+                    [models.op.lt]: cursor,
+                }
+            }
+            const messages = await models.Message.findAll(options, { raw: true })
+            return messages.map(message => {
                 console.log(message.dataValues.created_at)
                 return {
                     ...message.dataValues,

@@ -7,8 +7,8 @@ import moment from 'moment'
 
 
 const MESSAGES_QUERY = gql`
-    query($offset: Int!, $channelId: Int!){
-        messages(offset: $offset, channelId: $channelId) {
+    query($cursor: String, $channelId: Int!){
+        messages(cursor: $cursor, channelId: $channelId) {
             id
             text
             user {
@@ -89,10 +89,10 @@ class AllMessages extends React.Component {
                             
             >
                 <Comment.Group>
-                    { this.state.hasMoreMessages && <Button onClick={() => fetchMore({
+                    { this.state.hasMoreMessages && messages.length >= 35 && <Button onClick={() => fetchMore({
                         variables: {
                             channelId,
-                            offset: messages.length 
+                            cursor: messages[messages.length -1].created_at
                         },
                         updateQuery: (prev, { fetchMoreResult }) => {
                             if (!fetchMoreResult) {
@@ -103,11 +103,11 @@ class AllMessages extends React.Component {
                             }
                             return {
                                 ...prev,
-                                messages: [ ...fetchMoreResult.messages, ...prev.messages]
+                                messages: [...prev.messages, ...fetchMoreResult.messages]
                             }
                         }
                     })}>Load more</Button> }
-                    { messages.map(message) }
+                    { [...messages].reverse().map(message) }
          
                 </Comment.Group>
             </Messages>
@@ -123,7 +123,7 @@ class MessageContainer extends React.Component {
         return (
             <Query 
                 query={MESSAGES_QUERY} 
-                variables={{channelId, offset: 0}} 
+                variables={{channelId}} 
                 fetchPolicy={"network-only"}
             >
             {
