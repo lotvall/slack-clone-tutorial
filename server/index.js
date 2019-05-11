@@ -25,6 +25,8 @@ app.use(cors('*'))
 //add User Id to the request
 app.use(addUser)
 
+app.use('/uploads', express.static('uploads'))
+
 const server =  new ApolloServer({ typeDefs, resolvers,  playground: true,
 
   subscriptions: {

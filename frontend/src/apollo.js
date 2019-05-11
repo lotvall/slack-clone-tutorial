@@ -5,11 +5,17 @@ import { InMemoryCache } from 'apollo-cache-inmemory';
 import { ApolloLink, split } from 'apollo-link';
 import { WebSocketLink } from 'apollo-link-ws';
 import { getMainDefinition } from 'apollo-utilities';
+import { createUploadLink } from 'apollo-upload-client'
+
 
 // Create an http link:
-const httpLink = createHttpLink({
+const httpLink = createUploadLink({
     uri: 'http://localhost:4000/graphql',
 });
+
+// const httpLink = createHttpLink({
+//     uri: 'http://localhost:4000/graphql',
+// });
   
 // Create a WebSocket link:
 const wsLink = new WebSocketLink({

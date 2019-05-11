@@ -1,44 +1,12 @@
 import React from 'react'
 import { Form, Button, Modal } from 'semantic-ui-react'
-import { Mutation, Query } from 'react-apollo'
-import { withRouter , Redirect} from 'react-router-dom'
-import { TEAM_MEMBERS_QUERY } from '../graphql/team'
+import { Mutation } from 'react-apollo'
+import { withRouter } from 'react-router-dom'
 import {Formik} from 'formik'
 import SelectMultiUsers from './SelectMultiUsers'
 import { CREATE_DMCHANNEL_MUTATION } from '../graphql/channel'
 import { USER_QUERY } from '../graphql/user';
 import { findIndex } from 'lodash'
-
-class QueryContainer extends React.Component {
-    render() {
-        const {teamId, open, onClose, userId} = this.props
-
-        return (
-            <Query query={TEAM_MEMBERS_QUERY} variables={{teamId}}>
-                {
-                    ({ loading, error, data}) => {
-                        if (loading) console.log('loading')
-                        if(error) console.log(error)
-                        if (data) console.log(data)
-
-                        const teamMembers = data.getTeamMembers
-                        console.log(teamMembers)
-                        return (
-                            <DirectMessageModal 
-                                open={open} 
-                                onClose={onClose}
-                                teamMembers={teamMembers}
-                                teamId={teamId}
-                                loading={loading}
-                                userId={userId}
-                            />
-                        )
-                    }
-                }
-            </Query>
-        )
-    }
-}
 
 const DirectMessageModal = withRouter(({
     open, 
@@ -90,7 +58,7 @@ const DirectMessageModal = withRouter(({
                                 <SelectMultiUsers
                                     teamId={teamId}
                                     selectedMembers={values.members}
-                                    handleChange={(e, { value }) => setFieldValue('members', value)}
+                                    handleChange={ (e, { value }) => setFieldValue('members', value) }
                                     placeholder="Select members to message"
                                     userId = {userId}
                                 />
@@ -116,7 +84,7 @@ const DirectMessageModal = withRouter(({
     
 ))
 
-export default QueryContainer
+export default DirectMessageModal
 
 
 

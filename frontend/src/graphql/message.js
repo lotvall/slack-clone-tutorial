@@ -13,6 +13,8 @@ export const MESSAGES_QUERY = gql`
       messages {
           id
           text
+          url
+          filetype
           user {
           username
           }
@@ -27,6 +29,8 @@ export const MESSAGE_SUBSCRIPTION = gql`
               id
               created_at
               text
+              url
+              filetype
               user {
                   username
               }

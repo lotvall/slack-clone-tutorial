@@ -1,12 +1,16 @@
 import { requiresTeamAccess, requiresAuth } from '../permission'
 import { withFilter } from 'apollo-server'
 import pubsub from '../pubsub'
+import storeFS from '../storeFS'
 
 const NEW_CHANNEL_MESSAGE = "NEW_CHANNEL_MESSAGE"
 
 export default {
     
     Message: {
+        url: parent => {
+            return parent.url ? `http://localhost:4000/uploads/${parent.url}` : parent.url
+        },
         user: ({ user, userId }, args, { models }) => {
             if(user) return user
             return models.User.findOne({where: { id: userId }})
@@ -16,7 +20,6 @@ export default {
     Subscription: {
         newChannelMessage: {
             subscribe: requiresTeamAccess.createResolver(withFilter((parent, args , { models, user }) => {
-                console.log('do we have args here?', args)
                 return pubsub.asyncIterator(NEW_CHANNEL_MESSAGE)            
             },
             (payload, args, { user }) => {
@@ -72,12 +75,26 @@ export default {
         })
     },
     Mutation: {
-        createMessage: requiresAuth.createResolver(async (parent, args, { models, user }) => {
+        createMessage: requiresAuth.createResolver(async (parent, { file , ...args }, { models, user }) => {
           try {
-            // this is what is failing
-            console.log('failing here...', {...args})
+            const messageData = args
+            if (file) {
+
+                console.log('file??', !!file)
+
+                const { createReadStream, filename, mimetype, encoding } = await file
+                
+                messageData.filetype = mimetype
+                messageData.url = filename
+                
+                const stream = createReadStream()
+                
+                storeFS(stream, filename)
+                
+            }
+            console.log('massage data', messageData)
             const message = await models.Message.create({
-                ...args,
+                ...messageData,
                 userId: user.id,
             });
     

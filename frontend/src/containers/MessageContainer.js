@@ -4,11 +4,28 @@ import { Comment } from 'semantic-ui-react'
 import moment from 'moment'
 import SendMessage from '../components/SendMessage'
 import { CREATE_MESSAGE_MUTATION, MESSAGES_QUERY, MESSAGE_SUBSCRIPTION } from '../graphql/message'
-console.log(CREATE_MESSAGE_MUTATION, MESSAGES_QUERY, MESSAGE_SUBSCRIPTION)
+import FileUpload from './../components/FileUpload'
+import RenderTextFile from './../components/RenderTextFile'
 
 
+const Message = ({url, text, filetype}) => {
 
- const message = ({ id, text, user, created_at }) => (
+    if (url) {
+        if (filetype.startsWith('image')) {
+            return <img src={`${url}`} />
+        } else if (filetype === 'text/plain') {
+            return <RenderTextFile url ={url}/>
+        } else if (filetype.startsWith('audio')) {
+            return <div><audio controls>
+                <source src={url} type={filetype} />
+            </audio> </div>
+        }
+    }
+
+    return <Comment.Text>{text}</Comment.Text>
+
+}
+ const message = ({ id, text, user, created_at, url, filetype }) => (
     <Comment key = {`message-${id}`}>
         <Comment.Content>
             <Comment.Author as='a'>{ user.username }</Comment.Author>
@@ -17,7 +34,9 @@ console.log(CREATE_MESSAGE_MUTATION, MESSAGES_QUERY, MESSAGE_SUBSCRIPTION)
                     { moment(created_at,"ddd MMM D YYYY HH:mm:ss").fromNow()}
                </div>
             </Comment.Metadata>
-            <Comment.Text>{text}</Comment.Text>
+
+            <Message url={url} text ={text} filetype={filetype}/>
+
             <Comment.Actions>
                 <Comment.Action>Reply</Comment.Action>
             </Comment.Actions>
@@ -32,8 +51,6 @@ class AllMessages extends React.Component {
     }
     componentWillMount() {
         const { channelId, cursor} = this.props
-
-        console.log('props: ', this.props.channelId)
         console.log(`subscribing to ${this.props.channelId}`)
 
         this.unscubscribe = this.props.subscribeToNewMessages(cursor, channelId);
@@ -76,8 +93,6 @@ class AllMessages extends React.Component {
     }
     handleFetchMore = async (channelId, cursor) => {
         const { client, fetchMore } = this.props
-
-        console.log('handlefettch', channelId, cursor, new Date(cursor).toISOString())
 
         const newVariables = {
             channelId,
@@ -130,33 +145,7 @@ class AllMessages extends React.Component {
             variables: { ...oldVariables }, 
             data: updatedData 
         })
-        // bug in fetchMore - will not accept different variables
 
-        // fetchMore({
-        //     variables: {
-        //         channelId,
-        //         cursor
-        //     },
-        //     updateQuery: (prev, { fetchMoreResult}) => {
-        //         if (!fetchMoreResult) {
-        //             return prev;
-        //         }
-        //         if(fetchMoreResult.messages.messages.length < 35) {
-        //             this.setState({hasMoreMessages: false})
-        //         }
-        //         console.log('prev', prev)
-        //         console.log('fetchMoreResult', fetchMoreResult)
-                
-        //         return {
-        //             ...prev,
-        //             messages: {
-        //                 cursor: fetchMoreResult.messages.cursor,
-        //                 messages: [...prev.messages.messages, ...fetchMoreResult.messages.messages],
-        //                 __typename: "MessagesResponse"
-        //             }
-        //         }
-        //     }
-        // })
     }
     handleScroll = () => {
         const {messages, channelId, fetchMore, cursor} = this.props
@@ -204,9 +193,11 @@ class AllMessages extends React.Component {
                     placeholder={channelName}
                     channelId={channelId}
                 />
-                <Comment.Group>
-                    { [...messages].reverse().map(message) }
-                </Comment.Group>
+                <FileUpload noClick channelId={channelId}>
+                    <Comment.Group>
+                        {[...messages].reverse().map(message)}
+                    </Comment.Group>
+                </FileUpload>
                 
             </div>
         )
