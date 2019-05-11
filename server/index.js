@@ -8,6 +8,8 @@ import addUser from './middleware/addUser'
 import http from 'http'
 import jwt from 'jsonwebtoken'
 import { refreshTokens } from './auth'
+import DataLoader from 'dataloader'
+import { channelBatcher } from './batchFunctions'
 
 const SECRET = "a string that you would never be able to guess"
 const SECRET2 = "another string, just used for refreshing"
@@ -69,7 +71,8 @@ const server =  new ApolloServer({ typeDefs, resolvers,  playground: true,
       models,
       user: connection ? connection.context.user : req.user,
       SECRET,
-      SECRET2
+      SECRET2,
+      channelLoader: new DataLoader(ids => channelBatcher(ids, models, req.user))
     };
   }
 });
