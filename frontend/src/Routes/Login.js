@@ -4,6 +4,7 @@ import { observer } from 'mobx-react'
 import { Form, Button, Container, Header, Input, Message } from 'semantic-ui-react'
 import { graphql } from 'react-apollo';
 import gql from 'graphql-tag'
+import { wsLink } from '../apollo'
 
 const LOGIN_MUTATION = gql`
     mutation($email: String!, $password:String!){
@@ -45,6 +46,7 @@ class Login extends React.Component {
         if(ok) {
             localStorage.setItem('token', token)
             localStorage.setItem('refreshToken', refreshToken)
+            wsLink.subscriptionClient.tryReconnect()
             this.props.history.push('/view-team')
         } else {
             const err = {}
